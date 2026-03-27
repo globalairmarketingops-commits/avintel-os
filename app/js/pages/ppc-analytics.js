@@ -55,6 +55,59 @@ const PPCAnalytics = (() => {
       { id: 'tbl-ppc', sortable: true, csvFilename: 'PPC_Campaigns' }
     );
 
+    // ── Part C: Search Term Waste Index ──
+    const waste = Store.get('intel_ppc_search_term_waste') || {};
+    const wasteTerms = Store.get('intel_ppc_waste_terms') || [];
+    html += Components.partHeader('PART C', 'Search Term Waste Index');
+
+    html += Components.alertBanner(
+      '<strong>Search Term Waste Rate:</strong> Percentage of paid spend on irrelevant or non-buyer-intent queries. High waste signals negative keyword gaps. Source: Google Ads Search Terms report.',
+      'info'
+    );
+
+    html += '<div class="row-grid row-grid-4">';
+    html += Components.kpiTile('Waste Rate', Components.formatPct(waste.waste_rate), {
+      confidence: waste.confidence || 'PROBABLE',
+      metricId: 'search_term_waste',
+      subtitle: 'Target: < 15%'
+    });
+    html += Components.kpiTile('Irrelevant Spend', Components.formatCurrency(waste.irrelevant_spend), {
+      confidence: waste.confidence || 'PROBABLE',
+      subtitle: 'of ' + Components.formatCurrency(waste.total_spend) + ' total'
+    });
+    html += Components.kpiTile('Wasted Clicks', Components.formatNumber(waste.wasted_clicks), {
+      confidence: waste.confidence || 'PROBABLE',
+      subtitle: waste.wasted_click_pct ? Components.formatPct(waste.wasted_click_pct) + ' of total clicks' : '—'
+    });
+    html += Components.kpiTile('Negative KW Coverage', Components.formatPct(waste.negative_kw_coverage), {
+      confidence: waste.confidence || 'PROBABLE',
+      subtitle: waste.negatives_added + ' negatives active'
+    });
+    html += '</div>';
+
+    // Waste terms table
+    html += Components.table(
+      [
+        { key: 'term', label: 'Search Term' },
+        { key: 'impressions', label: 'Impressions', render: (val) => Components.formatNumber(val) },
+        { key: 'clicks', label: 'Clicks', render: (val) => Components.formatNumber(val) },
+        { key: 'spend', label: 'Spend', render: (val) => Components.formatCurrency(val) },
+        { key: 'conversions', label: 'Conv.', render: (val) => Components.formatNumber(val) },
+        { key: 'waste_reason', label: 'Waste Reason' },
+        { key: 'action', label: 'Recommended Action', render: (val) => Components.badge(val, val === 'Add Negative' ? 'red' : 'amber') }
+      ],
+      wasteTerms,
+      { id: 'tbl-search-waste', sortable: true, csvFilename: 'Search_Term_Waste' }
+    );
+
+    // Waste threshold alert
+    if (waste.waste_rate && waste.waste_rate > 20) {
+      html += Components.alertBanner(
+        'Search Term Waste Rate exceeds 20% — immediate negative keyword audit required. Review P4 (search term harvesting) and P6 (negative keyword expansion).',
+        'error'
+      );
+    }
+
     html += '</div>';
     container.innerHTML = html;
   }

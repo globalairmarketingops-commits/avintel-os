@@ -66,7 +66,53 @@ const CompetitiveIntel = (() => {
       { id: 'tbl-features', sortable: false, csvFilename: 'Feature_Comparison' }
     );
 
-    // ── Part D: Competitive Alerts ──
+    // ── Part D: Category Defensibility Score ──
+    const categories = Store.get('intel_competitive_defensibility') || [];
+    html += Components.partHeader('PART D', 'Category Defensibility Score');
+
+    html += Components.alertBanner(
+      '<strong>Category Defensibility:</strong> Combined rank stability, CPC pressure, content depth, listing depth, and repeat audience strength vs Controller. Score 0–100. Below 50 = vulnerable.',
+      'info'
+    );
+
+    html += Components.table(
+      [
+        { key: 'category', label: 'Category' },
+        { key: 'score', label: 'Defensibility', render: (val) => {
+          const color = val >= 70 ? 'green' : val >= 50 ? 'amber' : 'red';
+          return Components.badge(val + '/100', color);
+        }},
+        { key: 'rank_stability', label: 'Rank Stability', render: (val) => Components.formatPct(val) },
+        { key: 'cpc_pressure', label: 'CPC Pressure', render: (val) => {
+          const color = val === 'Low' ? 'green' : val === 'Medium' ? 'amber' : 'red';
+          return Components.badge(val, color);
+        }},
+        { key: 'content_depth', label: 'Content Depth', render: (val) => Components.formatNumber(val) + ' articles' },
+        { key: 'listing_depth', label: 'Listing Depth', render: (val) => Components.formatNumber(val) },
+        { key: 'repeat_audience', label: 'Repeat Audience', render: (val) => Components.formatPct(val) },
+        { key: 'trend', label: 'Trend', render: (val) => {
+          if (val === 'rising') return '<span style="color:var(--ga-green-dark);">&#9650; Rising</span>';
+          if (val === 'falling') return '<span style="color:var(--ga-red);">&#9660; Falling</span>';
+          return '<span style="color:var(--ga-muted);">&#9654; Stable</span>';
+        }},
+        { key: 'confidence', label: 'Confidence', render: (val) => Confidence.badge(val) }
+      ],
+      categories,
+      { id: 'tbl-defensibility', sortable: true, csvFilename: 'Category_Defensibility' }
+    );
+
+    // Vulnerability callout
+    const vulnerable = categories.filter(c => c.score < 50);
+    if (vulnerable.length > 0) {
+      const names = vulnerable.map(v => v.category).join(', ');
+      html += Components.alertBanner(
+        '<strong>Vulnerable categories:</strong> ' + names + ' — score below 50. Prioritize content depth, listing quality, and negative keyword defense in these verticals.',
+        'error'
+      );
+    }
+
+    // ── Part E: Competitive Alerts ──
+    html += Components.partHeader('PART E', 'Competitive Alerts');
     const alertLevel = detectImpressionShareDrop(auction);
     if (alertLevel === 'warning') {
       html += Components.alertBanner('Impression share dropped 5+ points week-over-week. Review bid strategy (P5) or budget reallocation (P9).', 'error');

@@ -125,6 +125,41 @@ const SeedData = (() => {
       { campaign: 'Jets', spend: 0, clicks: 0, impressions: 0, ctr: 0, conversions: 0, cpqi: 0, status: 'On Hold', confidence: 'CONFIRMED', _confidence: 'CONFIRMED' }
     ]);
 
+    // PPC Search Term Waste
+    Store.set('intel_ppc_search_term_waste', {
+      waste_rate: 22.4,
+      irrelevant_spend: 1512,
+      total_spend: 6750,
+      wasted_clicks: 487,
+      wasted_click_pct: 21.8,
+      negative_kw_coverage: 34.2,
+      negatives_added: 86,
+      confidence: 'PROBABLE'
+    });
+
+    Store.set('intel_ppc_waste_terms', [
+      { term: 'cessna citation jet price', impressions: 3200, clicks: 84, spend: 218, conversions: 0, waste_reason: 'Jet intent — piston campaign', action: 'Add Negative' },
+      { term: 'free aircraft listings', impressions: 2800, clicks: 72, spend: 187, conversions: 0, waste_reason: 'Non-buyer intent', action: 'Add Negative' },
+      { term: 'how to fly a cessna', impressions: 4100, clicks: 96, spend: 249, conversions: 0, waste_reason: 'Informational — no purchase intent', action: 'Add Negative' },
+      { term: 'cessna 172 rental near me', impressions: 1900, clicks: 54, spend: 140, conversions: 0, waste_reason: 'Rental intent — not buyer', action: 'Add Negative' },
+      { term: 'beechcraft parts supplier', impressions: 1200, clicks: 38, spend: 99, conversions: 0, waste_reason: 'Parts/MRO intent', action: 'Add Negative' },
+      { term: 'aircraft broker salary', impressions: 980, clicks: 31, spend: 81, conversions: 0, waste_reason: 'Career search', action: 'Add Negative' },
+      { term: 'cirrus sr22 simulator', impressions: 1400, clicks: 42, spend: 109, conversions: 0, waste_reason: 'Simulator — not buyer', action: 'Add Negative' },
+      { term: 'cheap planes for sale under 50k', impressions: 3800, clicks: 70, spend: 182, conversions: 1, waste_reason: 'Low-value / tire-kicker', action: 'Monitor' },
+      { term: 'cessna 182 for sale', impressions: 8200, clicks: 312, spend: 812, conversions: 8, waste_reason: '—', action: 'Keep' },
+      { term: 'beechcraft bonanza price', impressions: 5600, clicks: 198, spend: 515, conversions: 5, waste_reason: '—', action: 'Keep' }
+    ]);
+
+    // Competitive Category Defensibility
+    Store.set('intel_competitive_defensibility', [
+      { category: 'Jets', score: 74, rank_stability: 82.1, cpc_pressure: 'High', content_depth: 14, listing_depth: 4280, repeat_audience: 38.4, trend: 'stable', confidence: 'PROBABLE' },
+      { category: 'Turboprops', score: 68, rank_stability: 76.4, cpc_pressure: 'Medium', content_depth: 8, listing_depth: 1240, repeat_audience: 32.1, trend: 'rising', confidence: 'PROBABLE' },
+      { category: 'Piston Single', score: 41, rank_stability: 52.8, cpc_pressure: 'High', content_depth: 3, listing_depth: 890, repeat_audience: 24.6, trend: 'falling', confidence: 'PROBABLE' },
+      { category: 'Piston Multi', score: 46, rank_stability: 58.2, cpc_pressure: 'Medium', content_depth: 2, listing_depth: 420, repeat_audience: 21.8, trend: 'falling', confidence: 'PROBABLE' },
+      { category: 'Helicopters', score: 88, rank_stability: 94.2, cpc_pressure: 'Low', content_depth: 22, listing_depth: 1860, repeat_audience: 44.7, trend: 'rising', confidence: 'CONFIRMED' },
+      { category: 'Warbirds / Experimental', score: 56, rank_stability: 64.8, cpc_pressure: 'Low', content_depth: 6, listing_depth: 340, repeat_audience: 28.3, trend: 'stable', confidence: 'POSSIBLE' }
+    ]);
+
     // Content Performance
     Store.set('intel_content_pillars', [
       { pillar: 'Aircraft Buying Guides', articles: 2, sessions: 1200, engagement_rate: 78.4, conversions: 4 },
