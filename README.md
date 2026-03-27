@@ -1,6 +1,6 @@
-# Av/IntelOS — GlobalAir.com Marketing Intelligence Hub
+# Av/IntelOS — GlobalAir.com Marketing Intelligence Hub v2.0
 
-7-page SPA intelligence dashboard for GlobalAir.com marketing operations. Surfaces GA4, Google Ads, and Search Console data with role-based access and data confidence scoring.
+11-page SPA intelligence dashboard for GlobalAir.com marketing operations. Surfaces GA4, Google Ads, Search Console, and CRM business intelligence with role-based access and data confidence scoring.
 
 ## Quick Start
 
@@ -27,6 +27,10 @@ npm start
 | `#ppc` | PPC Analytics | Google Ads campaigns |
 | `#content` | Content & Channel | GA4 landing pages mapped to content pillars |
 | `#health` | Data Health | Connector status + GA4 property health |
+| `#revenue` | Revenue Intelligence | Billing/CRM + MVS (CRM blocked — seed data) |
+| `#brokers` | Broker Command Center | CRM + Listing DB (seed data) |
+| `#inventory` | Inventory & Listing Intelligence | Listing DB + GA4 (seed data) |
+| `#market` | Market Demand & Opportunity | GSC + Google Ads + Listing views (seed data) |
 
 ## Data Refresh
 

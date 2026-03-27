@@ -46,6 +46,62 @@ const IntelDashboard = (() => {
     }
     html += '</div>';
 
+    // ── Part A2: Decision Confidence Bar ──
+    const allConf = Object.values(kpis).filter(k => k && k.confidence);
+    const confirmed = allConf.filter(k => k.confidence === 'CONFIRMED').length;
+    const probable = allConf.filter(k => k.confidence === 'PROBABLE').length;
+    const possible = allConf.filter(k => k.confidence === 'POSSIBLE').length;
+    const total = allConf.length || 1;
+    const confPct = Math.round((confirmed / total) * 100);
+    const probPct = Math.round((probable / total) * 100);
+    const possPct = Math.round((possible / total) * 100);
+
+    html += `<div style="margin:20px 0 24px 0;">`;
+    html += Components.partHeader('A2', 'Decision Confidence');
+    html += `<div style="display:flex;align-items:center;gap:16px;margin-top:8px;">`;
+    html += `<div style="flex:1;height:28px;border-radius:6px;overflow:hidden;display:flex;background:var(--ga-off-white);">`;
+    if (confPct > 0) html += `<div style="width:${confPct}%;background:var(--ga-green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--ga-navy);">${confPct}%</div>`;
+    if (probPct > 0) html += `<div style="width:${probPct}%;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--ga-charcoal);">${probPct}%</div>`;
+    if (possPct > 0) html += `<div style="width:${possPct}%;background:var(--ga-muted-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--ga-charcoal);">${possPct}%</div>`;
+    html += `</div>`;
+    html += `<span style="font-size:13px;font-weight:600;color:var(--ga-navy);white-space:nowrap;">Decision Confidence: ${confPct}%</span>`;
+    html += `</div></div>`;
+
+    // ── Part A3: Scale Safety Flag ──
+    const healthGA4 = Store.get('intel_health_ga4') || {};
+    const healthConnectors = Store.get('intel_health_connectors') || {};
+    const callTrackingActive = false; // Known: NOT ACTIVE
+    const crmConnected = false; // Known: BLOCKED
+    const conversionConfirmed = healthGA4.conversion_signal === 'confirmed';
+    const ga4Clean = healthGA4.contamination_status !== 'ACTIVE';
+
+    let safetyLevel = 'green';
+    let safetyLabel = 'Safe to Scale';
+    let safetyDetail = 'Core attribution signals passing.';
+
+    if (!conversionConfirmed || !callTrackingActive) {
+      safetyLevel = 'yellow';
+      safetyLabel = 'Diagnose First';
+      safetyDetail = 'Conversion signal unconfirmed or call tracking inactive.';
+    }
+    if (!crmConnected && !callTrackingActive && !conversionConfirmed) {
+      safetyLevel = 'red';
+      safetyLabel = 'Tracking Compromised';
+      safetyDetail = 'CRM blocked, call tracking inactive, conversion signal unconfirmed. Attribution unreliable for scaling decisions.';
+    }
+
+    const safetyColors = { green: 'var(--ga-green)', yellow: '#F59E0B', red: 'var(--ga-red)' };
+    const safetyTextColors = { green: 'var(--ga-navy)', yellow: 'var(--ga-charcoal)', red: '#FFFFFF' };
+
+    html += `<div style="margin:0 0 24px 0;">`;
+    html += Components.partHeader('A3', 'Scale Safety');
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--ga-radius);background:${safetyColors[safetyLevel]};margin-top:8px;">`;
+    html += `<span style="font-size:20px;">${safetyLevel === 'green' ? '&#9989;' : safetyLevel === 'yellow' ? '&#9888;' : '&#9940;'}</span>`;
+    html += `<div>`;
+    html += `<div style="font-family:var(--ga-font-display);font-weight:700;font-size:15px;color:${safetyTextColors[safetyLevel]};">${safetyLabel}</div>`;
+    html += `<div style="font-size:12px;color:${safetyTextColors[safetyLevel]};opacity:0.85;margin-top:2px;">${safetyDetail}</div>`;
+    html += `</div></div></div>`;
+
     // ── Part B: Prime Directive Health ──
     html += Components.partHeader('PART B', 'Prime Directive Health');
     html += '<div class="row-grid row-grid-5">';
@@ -74,6 +130,30 @@ const IntelDashboard = (() => {
         );
       });
     }
+
+    // ── Part E: Top 5 Revenue Actions ──
+    html += Components.partHeader('PART E', 'Top 5 Revenue Actions');
+    const revenueActions = [
+      { action: 'Lock QI definition and activate CallRail', impact: 'Unlocks true CPQI and phone attribution (~90% of buyer activity)', urgency: 'Critical', owner: 'Casey / Dev' },
+      { action: 'Confirm conversion signal on piston campaigns', impact: 'Enables Jets campaign launch and spend scaling', urgency: 'Critical', owner: 'Casey' },
+      { action: 'Unblock CRM/billing integration', impact: 'Revenue truth, ARPA, and offline conversion loop', urgency: 'High', owner: 'Dev / Clay' },
+      { action: 'Defend at-risk piston broker (Premier Aircraft)', impact: 'Protect ~$14.6K revenue, prevent Controller migration', urgency: 'High', owner: 'Ian / Casey' },
+      { action: 'Deploy GTM consistently across all 8 servers', impact: 'Fix tag gaps, enable enhanced conversions audit', urgency: 'Medium', owner: 'Thomas Galla' }
+    ];
+    html += `<div style="display:grid;gap:10px;margin-top:12px;">`;
+    revenueActions.forEach((a, i) => {
+      const urgencyColor = a.urgency === 'Critical' ? 'var(--ga-red)' : a.urgency === 'High' ? '#F59E0B' : 'var(--ga-blue)';
+      html += `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--ga-off-white);border-radius:var(--ga-radius);border-left:3px solid ${urgencyColor};">`;
+      html += `<span style="font-family:var(--ga-font-display);font-weight:700;font-size:18px;color:var(--ga-navy);min-width:24px;">${i + 1}</span>`;
+      html += `<div style="flex:1;">`;
+      html += `<div style="font-weight:600;font-size:13px;color:var(--ga-navy);">${a.action}</div>`;
+      html += `<div style="font-size:12px;color:var(--ga-charcoal);margin-top:3px;">${a.impact}</div>`;
+      html += `<div style="display:flex;gap:8px;margin-top:6px;">`;
+      html += `<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:${urgencyColor};color:${a.urgency === 'Critical' ? '#fff' : 'var(--ga-charcoal)'};">${a.urgency}</span>`;
+      html += `<span style="font-size:10px;color:var(--ga-muted);">Owner: ${a.owner}</span>`;
+      html += `</div></div></div>`;
+    });
+    html += `</div>`;
 
     html += '</div>';
     container.innerHTML = html;

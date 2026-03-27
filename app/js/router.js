@@ -1,6 +1,7 @@
 /* =====================================================================
    AvIntelOS — Hash-Based Router
-   Routes: #dashboard, #ga4, #organic, #competitive, #ppc, #content, #health
+   Routes: #dashboard, #ga4, #organic, #competitive, #ppc, #content, #health,
+           #revenue, #brokers, #inventory, #market
    ===================================================================== */
 
 const Router = (() => {
@@ -11,7 +12,11 @@ const Router = (() => {
     competitive: { label: 'Competitive Intel',      icon: '&#128373;', page: 'competitive-intelligence', group: 'analytics' },
     ppc:         { label: 'PPC & Paid',             icon: '&#128176;', page: 'ppc-analytics',          group: 'analytics' },
     content:     { label: 'Content & Channel',      icon: '&#128196;', page: 'content-channel',        group: 'performance' },
-    health:      { label: 'Data Health',            icon: '&#9889;',   page: 'data-health',            group: 'performance' }
+    health:      { label: 'Data Health',            icon: '&#9889;',   page: 'data-health',            group: 'performance' },
+    revenue:     { label: 'Revenue Intelligence',   icon: '&#128181;', page: 'revenue-intelligence',   group: 'business' },
+    brokers:     { label: 'Broker Command',         icon: '&#129309;', page: 'broker-command',         group: 'business' },
+    inventory:   { label: 'Inventory Intelligence', icon: '&#9992;',   page: 'inventory-intelligence', group: 'business' },
+    market:      { label: 'Market Demand',          icon: '&#127793;', page: 'market-demand',          group: 'business' }
   };
 
   let currentRoute = 'dashboard';
@@ -59,7 +64,11 @@ const Router = (() => {
       competitive: () => typeof CompetitiveIntel !== 'undefined' && CompetitiveIntel.render(content),
       ppc:         () => typeof PPCAnalytics !== 'undefined' && PPCAnalytics.render(content),
       content:     () => typeof ContentChannel !== 'undefined' && ContentChannel.render(content),
-      health:      () => typeof DataHealth !== 'undefined' && DataHealth.render(content)
+      health:      () => typeof DataHealth !== 'undefined' && DataHealth.render(content),
+      revenue:     () => typeof RevenueIntelligence !== 'undefined' && RevenueIntelligence.render(content),
+      brokers:     () => typeof BrokerCommand !== 'undefined' && BrokerCommand.render(content),
+      inventory:   () => typeof InventoryIntelligence !== 'undefined' && InventoryIntelligence.render(content),
+      market:      () => typeof MarketDemand !== 'undefined' && MarketDemand.render(content)
     };
 
     setTimeout(() => {
