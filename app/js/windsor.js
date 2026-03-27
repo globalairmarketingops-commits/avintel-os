@@ -8,7 +8,16 @@ const Windsor = (() => {
   const CACHE_KEY = 'windsor_cache';
   const CACHE_TTL_HOURS = 24;
   const STALE_THRESHOLD_HOURS = 48;
-  const API_BASE = '/api/data';
+  const API_BASE = 'data';
+
+  // Maps endpoint slugs to static JSON filenames
+  const DATA_FILES = {
+    'ga4-channels':  'ga4_channels.json',
+    'google-ads':    'google_ads_campaigns.json',
+    'gsc-portfolio': 'gsc_portfolio.json',
+    'gsc-top-pages': 'gsc_top_pages.json',
+    'meta':          'meta.json'
+  };
 
   const CONNECTORS = {
     google_ads: { label: 'Google Ads', icon: '&#128176;' },
@@ -75,7 +84,8 @@ const Windsor = (() => {
 
   async function fetchEndpoint(endpoint) {
     try {
-      const response = await fetch(`${API_BASE}/${endpoint}`);
+      const filename = DATA_FILES[endpoint] || endpoint;
+      const response = await fetch(`${API_BASE}/${filename}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return await response.json();
     } catch (e) {
