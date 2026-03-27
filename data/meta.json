@@ -1,0 +1,28 @@
+{
+  "last_refresh": "2026-03-27T12:00:00.000Z",
+  "refresh_method": "windsor_mcp_via_claude_code",
+  "connectors": {
+    "ga4": {
+      "status": "connected",
+      "account": "347642641",
+      "last_fetch": "2026-03-27T12:00:00.000Z",
+      "files": ["ga4_channels.json"]
+    },
+    "google_ads": {
+      "status": "connected",
+      "account": "392-951-4382",
+      "last_fetch": "2026-03-27T12:00:00.000Z",
+      "files": ["google_ads_campaigns.json"]
+    },
+    "gsc": {
+      "status": "connected",
+      "account": "sc-domain:globalair.com",
+      "last_fetch": "2026-03-27T12:00:00.000Z",
+      "files": ["gsc_portfolio.json", "gsc_top_pages.json"]
+    },
+    "semrush": {"status": "not_connected", "files": []},
+    "spyfu": {"status": "not_connected", "files": []},
+    "clarity": {"status": "not_connected", "files": []},
+    "simpli_fi": {"status": "not_connected", "files": []}
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "fetched_at": "2026-03-27T12:00:00.000Z",
+  "source": "windsor_mcp",
+  "connector": "googleanalytics4",
+  "account": "347642641",
+  "date_range": "last_30d",
+  "confidence": "CONFIRMED",
+  "data": [
+    {"default_channel_group": "Organic Search", "sessions": 139289, "totalusers": 108782, "engaged_sessions": 91536, "engagement_rate": 0.6572, "bounce_rate": 0.3428, "screen_page_views": 349986, "conversions": 1385},
+    {"default_channel_group": "Direct", "sessions": 50496, "totalusers": 40576, "engaged_sessions": 25129, "engagement_rate": 0.4976, "bounce_rate": 0.5024, "screen_page_views": 127731, "conversions": 605},
+    {"default_channel_group": "Email", "sessions": 15414, "totalusers": 7815, "engaged_sessions": 9104, "engagement_rate": 0.5906, "bounce_rate": 0.4094, "screen_page_views": 37272, "conversions": 356},
+    {"default_channel_group": "Paid Search", "sessions": 11730, "totalusers": 10006, "engaged_sessions": 7688, "engagement_rate": 0.6554, "bounce_rate": 0.3446, "screen_page_views": 37697, "conversions": 96},
+    {"default_channel_group": "Organic Social", "sessions": 9086, "totalusers": 6655, "engaged_sessions": 6758, "engagement_rate": 0.7438, "bounce_rate": 0.2562, "screen_page_views": 28780, "conversions": 22},
+    {"default_channel_group": "Referral", "sessions": 4112, "totalusers": 3017, "engaged_sessions": 2151, "engagement_rate": 0.5231, "bounce_rate": 0.4769, "screen_page_views": 8611, "conversions": 74},
+    {"default_channel_group": "Cross-network", "sessions": 76, "totalusers": 75, "engaged_sessions": 74, "engagement_rate": 0.9737, "bounce_rate": 0.0263, "screen_page_views": 500, "conversions": 3},
+    {"default_channel_group": "Organic Video", "sessions": 31, "totalusers": 16, "engaged_sessions": 27, "engagement_rate": 0.871, "bounce_rate": 0.129, "screen_page_views": 156, "conversions": 3}
+  ],
+  "contamination_note": "Unassigned channel (739,510 sessions, 0.08% engagement) excluded — this is Email_Open_ GA4 contamination active since June 2023. Real engagement across clean channels: ~62%. Reported with contamination: ~17%."
+}
