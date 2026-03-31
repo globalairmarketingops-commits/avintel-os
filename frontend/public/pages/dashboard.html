@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Av/IntelOS — Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* AvIntelOS Shared Design System — matches Av/SocialOS light theme */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#102297;--navy-deep:#0c1340;--navy-tint:#d6dcf7;--navy-tint-soft:#eef0fb;
+  --green:#97CB00;--green-dark:#5e8200;--green-text:#3a5c00;
+  --blue:#1877f2;--red:#d32f2f;--amber:#f59e0b;--violet:#7c3aed;--cyan:#0891b2;
+  --text-primary:#0c1340;--text-secondary:#374151;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:#d1d5db;--border-soft:#e5e7eb;--surface:#fff;--bg:#f4f6fb;--bg-soft:#eef0fb;
+  --radius:10px;--radius-lg:14px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(16,34,151,.08),0 4px 16px rgba(16,34,151,.06);
+  --shadow-md:0 2px 8px rgba(16,34,151,.10),0 8px 24px rgba(16,34,151,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(16,34,151,.18);border-radius:3px;}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,19,64,.3);}
+.logo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;display:flex;align-items:center;gap:2px;}
+.logo-prefix{color:var(--green);}
+.logo-sep{color:rgba(255,255,255,.18);margin:0 12px;font-weight:300;font-size:18px;}
+.logo-page{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.07em;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-role{display:flex;gap:4px;}
+.role-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.role-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);}
+.hdr-date{font-size:12px;color:rgba(255,255,255,.4);}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+
+/* PAGE HERO */
+.page-hero{padding:16px 32px 0;max-width:1560px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.02em;}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:3px;max-width:720px;}
+
+/* TAB BAR */
+.tab-bar{padding:12px 32px 0;max-width:1560px;margin:0 auto;}
+.tab-bar-inner{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-muted);background:var(--surface);box-shadow:var(--shadow);white-space:nowrap;}
+.tab-btn:hover{transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(16,34,151,.3);}
+
+/* BODY */
+.page-body{padding:16px 32px 56px;max-width:1560px;margin:0 auto;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* CONFIDENCE PILLS */
+.conf-confirmed{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-probable{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-possible{background:#fffbeb;color:#92400e;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* PRIORITY PILLS */
+.pri-now{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-next{background:#fef3c7;color:#78350f;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-later{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* STATUS PILLS */
+.status-good{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;}
+.status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.status-bad{background:#fff1f0;color:var(--red);border:1px solid #fecaca;}
+.status-pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* KPI METRIC CARDS */
+.metric-grid{display:grid;gap:12px;}
+.metric-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:all .2s;}
+.metric-card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;transform:translateY(-2px);}
+.metric-card:hover .m-label,.metric-card:hover .m-value,.metric-card:hover .m-sub{color:rgba(255,255,255,.9)!important;}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px;}
+.m-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;}
+.m-sub{font-size:11px;color:var(--text-muted);}
+.m-good{color:var(--green-text)!important;}.m-warn{color:#92400e!important;}.m-bad{color:var(--red)!important;}
+
+/* SECTION LABEL */
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(16,34,151,.2),transparent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-soft);border-left:4px solid var(--green);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card-plain{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;border-left-color:transparent;transform:translateY(-1px);box-shadow:0 8px 28px rgba(16,34,151,.22);}
+.card:hover .card-title,.card:hover .card-meta,.card:hover .row-label,.card:hover .row-value,.card:hover .row-note,.card:hover .note-text{color:rgba(255,255,255,.88)!important;}
+.card:hover .soft-row,.card:hover .mini-panel{border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;}
+.card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-meta{font-size:12px;color:var(--text-muted);margin-left:auto;font-weight:400;}
+.card-red{border-left-color:var(--red)!important;}
+.card-amber{border-left-color:var(--amber)!important;}
+
+/* SOFT ROWS */
+.soft-list{display:grid;gap:6px;}
+.soft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);font-size:12px;}
+.row-label{color:var(--text-muted);}
+.row-value{color:var(--text-primary);font-weight:700;}
+.row-note{color:var(--text-muted);font-size:11px;}
+.note-text{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+/* OPPORTUNITY CARDS */
+.opp-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.opp-card:last-child{margin-bottom:0;}
+.opp-card.pinned{border-left:3px solid var(--green-dark);}
+.opp-card.do-not-act{border-left:3px solid var(--amber);background:#fffbeb;}
+.opp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.opp-signal{font-size:13px;font-weight:700;color:var(--text-primary);flex:1;}
+.opp-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opp-gap{font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.opp-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opp-meta-item{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 10px;}
+.opp-meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:3px;}
+.opp-meta-value{font-size:12px;font-weight:600;color:var(--text-primary);}
+.lift-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lift-label{color:var(--text-muted);}
+.lift-value{font-weight:600;color:var(--text-primary);}
+.lift-value.expected{color:var(--green-dark);}
+
+/* TABLE */
+.table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border-soft);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 12px;text-align:left;background:var(--bg-soft);border-bottom:1px solid var(--border-soft);position:sticky;top:0;}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-secondary);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(16,34,151,.02);}
+.td-primary{font-weight:600;color:var(--text-primary);}
+.td-code{font-family:monospace;font-size:11px;}
+
+/* MINI PANEL */
+.mini-panel{padding:12px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);}
+.mini-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px;}
+.mini-value{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.mini-note{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+/* SPARKLINE */
+.spark-wrap{display:flex;align-items:flex-end;gap:2px;height:32px;}
+.spark-bar{background:var(--navy);border-radius:2px 2px 0 0;flex:1;min-width:4px;opacity:.7;}
+
+/* CHART SHELL */
+.chart-shell{height:180px;border-radius:var(--radius);background:linear-gradient(180deg,#fafbff,#fff);border:1px solid var(--border-soft);position:relative;overflow:hidden;padding:10px;}
+.gridlines{position:absolute;inset:0;background-image:linear-gradient(to top,rgba(209,213,219,.5) 1px,transparent 1px);background-size:100% 40px;pointer-events:none;}
+.line-wrap{position:absolute;left:10px;right:10px;top:12px;bottom:20px;}
+.line-wrap svg{width:100%;height:100%;}
+.legend-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px;}
+.legend-label{font-size:11px;color:var(--text-muted);}
+
+/* SAVED VIEWS */
+.saved-views-list{display:grid;gap:8px;}
+.saved-view-btn{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;text-align:left;cursor:pointer;transition:all .15s;width:100%;}
+.saved-view-btn:hover{border-color:var(--navy);background:var(--navy-tint-soft);}
+.sv-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+.sv-desc{font-size:11px;color:var(--text-muted);}
+
+/* TRUST MODULE */
+.trust-module{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;}
+.trust-module-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.trust-module li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0;}
+.trust-module li::before{content:'• ';color:var(--navy);}
+
+/* ACTION FRAMEWORK */
+.action-block{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;}
+.action-block-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.action-block li{font-size:12px;color:var(--text-muted);line-height:1.6;list-style:none;}
+.action-block li::before{content:'→ ';color:var(--navy);font-weight:600;}
+
+/* LEAKAGE TABLE BADGES */
+.badge-organic{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ppc{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-rev{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-inv{background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-data{background:#fff1f0;color:var(--red);border:1px solid #fecaca;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ga4{background:#f0f9ff;color:#075985;border:1px solid #bae6fd;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-content{background:#faf5ff;color:#6b21a8;border:1px solid #e9d5ff;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-gen{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+
+/* PROGRESS BAR */
+.prog-bar{height:8px;border-radius:20px;background:#e5e7eb;overflow:hidden;border:1px solid var(--border-soft);}
+.prog-fill{height:100%;border-radius:20px;}
+.prog-green{background:var(--green);}
+.prog-amber{background:var(--amber);}
+.prog-red{background:var(--red);}
+.prog-blue{background:var(--blue);}
+
+/* INCIDENT CARDS */
+.incident-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.incident-card.broken{border-left:4px solid var(--red);background:#fff5f5;}
+.incident-card.warning{border-left:4px solid var(--amber);background:#fffbeb;}
+.incident-card.healthy{border-left:4px solid var(--green-dark);}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.inc-title{font-size:13px;font-weight:700;color:var(--text-primary);}
+.inc-body{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;}
+.inc-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);}
+.inc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.grid-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;}
+.grid-main{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;}
+.grid-stack{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;}
+.mb-16{margin-bottom:16px;}.mb-20{margin-bottom:20px;}.mb-12{margin-bottom:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.flex-center{display:flex;align-items:center;gap:8px;}
+.space-y>*+*{margin-top:12px;}
+.up{color:var(--green-text);font-weight:600;}.down{color:var(--red);font-weight:600;}.flat{color:var(--text-muted);}
+
+@media(max-width:1200px){.grid-hero,.grid-main,.grid-stack,.grid-2{grid-template-columns:1fr;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.page-hero,.tab-bar,.page-body{padding-left:16px;padding-right:16px;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr;}}
+.metric-grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.comp-zone{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:8px;}
+.comp-zone-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px;}
+.comp-zone-note{font-size:12px;color:var(--text-muted);}
+.comp-zone.attack{border-left:3px solid var(--red);}
+.comp-zone.compete{border-left:3px solid var(--amber);}
+.comp-zone.build{border-left:3px solid var(--blue);}
+.comp-zone.monitor{border-left:3px solid var(--text-muted);}
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="flex-center">
+    <div class="logo"><span class="logo-prefix">Av/</span>INTELOS</div>
+    <div class="logo-sep">|</div>
+    <div class="logo-page">Intelligence Dashboard</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-role">
+      <button class="role-btn active" onclick="setRole('casey',this)">Casey</button>
+      <button class="role-btn" onclick="setRole('clay',this)">Clay</button>
+      <button class="role-btn" onclick="setRole('jeffrey',this)">Jeffrey</button>
+    </div>
+    <span class="hdr-date">Mar 30, 2026 · Sprint 6</span>
+    <button class="hdr-btn">↻ Refresh</button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="hero-eyebrow">GlobalAir.com / Av/IntelOS</div>
+  <h1 class="hero-title">Intelligence Dashboard</h1>
+  <p class="hero-sub">Cross-domain signal aggregation, ranked opportunity queue, leakage map, competitive zones, and data trust status — all in one operator-safe view.</p>
+</div>
+
+<div class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="switchTab('queue',this)">Opportunity Queue</button>
+    <button class="tab-btn" onclick="switchTab('leakage',this)">Leakage Map</button>
+    <button class="tab-btn" onclick="switchTab('competitive',this)">Competitive Zones</button>
+    <button class="tab-btn" onclick="switchTab('trust',this)">Data Trust</button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="section-label mb-16">Key Performance Indicators</div>
+    <div class="metric-grid-5 mb-20">
+      <div class="metric-card"><div class="m-label">Qualified Inquiries</div><div class="m-value">418</div><div class="m-sub"><span class="up">▲ +14.2% WoW</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div><div class="m-sub" style="margin-top:5px;">CRM + GA4 + call tracking</div></div>
+      <div class="metric-card"><div class="m-label">CPQI</div><div class="m-value">$118</div><div class="m-sub"><span class="up">▲ -8.6% WoW</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div><div class="m-sub" style="margin-top:5px;">Google Ads + GA4 weighted</div></div>
+      <div class="metric-card"><div class="m-label">Advertiser Revenue</div><div class="m-value">$412.6K</div><div class="m-sub"><span class="up">▲ +3.4% MoM</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div><div class="m-sub" style="margin-top:5px;">Stripe + payment records</div></div>
+      <div class="metric-card"><div class="m-label">Broker Risk Index</div><div class="m-value m-bad">17</div><div class="m-sub"><span class="down">▼ +3 brokers</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div><div class="m-sub" style="margin-top:5px;">CRM + engagement model</div></div>
+      <div class="metric-card"><div class="m-label">Authority vs Controller</div><div class="m-value m-warn">62/100</div><div class="m-sub"><span class="up">▲ +4 pts</span></div><div style="margin-top:6px;"><span class="conf-possible">POSSIBLE</span></div><div class="m-sub" style="margin-top:5px;">Composite model</div></div>
+    </div>
+
+    <div class="section-label mb-16">Top Opportunity Signals — Cross Domain</div>
+    <div class="mb-20">
+      <div class="opp-card pinned">
+        <div class="opp-header"><div class="opp-signal">Cirrus SR22 QI ▲ +28% — paid and organic momentum aligned</div><div class="opp-badges"><span class="badge-ppc">PPC</span><span class="conf-confirmed">CONFIRMED</span></div></div>
+        <div class="opp-gap">Premium Tier ARPA: $9,820 ▲ +16% — driven by feature adoption lift</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-header"><div class="opp-signal">Silver Tier Renewal Risk — 9 accounts ▲ +14% decay</div><div class="opp-badges"><span class="badge-rev">Revenue</span><span class="conf-probable">PROBABLE</span></div></div>
+        <div class="opp-gap">Engagement decay in underutilized accounts. Requires save-motion now.</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-header"><div class="opp-signal">Controller Gap — Cessna 182: 18 terms, visibility gap narrowing (-11%)</div><div class="opp-badges"><span class="badge-organic">Organic</span><span class="conf-probable">PROBABLE</span></div></div>
+        <div class="opp-gap">Model-level share improving faster than generic category pages.</div>
+      </div>
+      <div class="opp-card pinned">
+        <div class="opp-header"><div class="opp-signal">Hidden Price Penalty — 21 days avg conversion lag, +9% WoW worsening</div><div class="opp-badges"><span class="badge-inv">Inventory</span><span class="conf-confirmed">CONFIRMED</span></div></div>
+        <div class="opp-gap">More stale unpriced listings entering the system. Broker remediation needed.</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-header"><div class="opp-signal">Call Tracking Coverage — 74%, down -5% WoW</div><div class="opp-badges"><span class="badge-data">Data Health</span><span class="conf-confirmed">CONFIRMED</span></div></div>
+        <div class="opp-gap">Coverage gap blocks full inquiry truth. Blocks jet expansion confidence.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Action Framework</div>
+        <div class="action-block"><div class="action-block-title">Fast wins</div><ul><li>Rewrite high-impression / low-CTR titles</li><li>Tighten PPC dayparting</li><li>Remediate hidden-price listings</li></ul></div>
+        <div class="action-block"><div class="action-block-title">Strategic moves</div><ul><li>Recruit inventory into supply-constrained models</li><li>Protect at-risk broker renewals</li><li>Concentrate spend in high-converting geos</li></ul></div>
+        <div class="action-block"><div class="action-block-title">Blockers to resolve</div><ul><li>Validate paid conversion actions</li><li>Increase call-tracking coverage to 90%+</li><li>Separate confirmed vs modeled authority signals</li></ul></div>
+      </div>
+      <div class="card">
+        <div class="card-title">QI Trend</div>
+        <div class="chart-shell">
+          <div class="gridlines"></div>
+          <div class="line-wrap">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polyline fill="rgba(16,34,151,.1)" stroke="#102297" stroke-width="3" points="0,72 14,68 28,62 42,58 56,52 70,49 84,43 100,38"/>
+              <polyline fill="none" stroke="#97CB00" stroke-width="2.5" points="0,82 14,79 28,74 42,68 56,63 70,57 84,53 100,47"/>
+            </svg>
+          </div>
+        </div>
+        <div class="legend-row"><span><span class="legend-dot" style="background:var(--navy)"></span><span class="legend-label">Direct QI (WoW)</span></span><span><span class="legend-dot" style="background:var(--green)"></span><span class="legend-label">Assisted QI</span></span></div>
+        <div style="margin-top:14px;"><div class="card-title" style="margin-bottom:8px;">Saved Views</div><div class="saved-views-list" id="saved-views-list"><div class="saved-view-btn"><div class="sv-name">Weekly Operator View</div><div class="sv-desc">Pinned opportunities, blockers, and fast wins.</div></div><div class="saved-view-btn"><div class="sv-name">Piston Growth Focus</div><div class="sv-desc">Model domination, demand gaps, and geo efficiency.</div></div><div class="saved-view-btn"><div class="sv-name">Churn Save Queue</div><div class="sv-desc">Broker risk, renewal timing, and ROI proof gaps.</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPPORTUNITY QUEUE -->
+  <div id="tab-queue" class="tab-content">
+    <div class="section-label mb-16">Ranked Opportunity Queue</div>
+
+    <div class="opp-card pinned">
+      <div class="opp-header"><div class="opp-signal">🔴 [Score 95] Validate paid conversion actions before any scaling</div><div class="opp-badges"><span class="badge-data">Measurement</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div>
+      <div class="opp-gap">Conversion actions still unconfirmed for jet expansion. Blocking safe scaling decisions across paid and some organic surfaces.</div>
+      <div class="opp-meta">
+        <div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Analytics / PPC</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">1–2 weeks</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Blocker</div><div class="opp-meta-value">Conversion actions unconfirmed</div></div>
+      </div>
+      <div style="margin-top:10px;background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px;">
+        <div class="lift-row"><span class="lift-label">Conservative</span><span class="lift-value">Risk reduction only</span></div>
+        <div class="lift-row"><span class="lift-label">Expected</span><span class="lift-value expected">Avoid false scaling</span></div>
+        <div class="lift-row"><span class="lift-label">Aggressive</span><span class="lift-value">Unlock safe expansion</span></div>
+      </div>
+    </div>
+
+    <div class="opp-card pinned">
+      <div class="opp-header"><div class="opp-signal">[Score 92] High impressions, weak CTR on priority make/model pages</div><div class="opp-badges"><span class="badge-organic">SEO</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div>
+      <div class="opp-gap">48.2K impressions on Cessna 172 page with 1.1% CTR — 37% below site average. SERP title lacks buyer-intent hooks.</div>
+      <div class="opp-meta">
+        <div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">SEO + Content</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">7–14 days</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Dependency</div><div class="opp-meta-value">GSC page-query export</div></div>
+      </div>
+      <div style="margin-top:10px;background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px;">
+        <div class="lift-row"><span class="lift-label">Conservative</span><span class="lift-value">+4% CTR</span></div>
+        <div class="lift-row"><span class="lift-label">Expected</span><span class="lift-value expected">+8% CTR</span></div>
+        <div class="lift-row"><span class="lift-label">Aggressive</span><span class="lift-value">+12% CTR</span></div>
+      </div>
+    </div>
+
+    <div class="opp-card pinned">
+      <div class="opp-header"><div class="opp-signal">[Score 90] Listings with hidden prices underperform by 19 days</div><div class="opp-badges"><span class="badge-inv">Inventory</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div>
+      <div class="opp-gap">Hidden-price piston listings convert 19 days slower. Listings with &lt;6 images show weaker inquiry rate. Top traffic broker pages still contain stale pricing.</div>
+      <div class="opp-meta">
+        <div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Broker Success</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">1–2 weeks</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Blocker</div><div class="opp-meta-value">Broker remediation workflow</div></div>
+      </div>
+    </div>
+
+    <div class="opp-card pinned">
+      <div class="opp-header"><div class="opp-signal">[Score 88] Conversion efficiency varies by hour and market — daypart/geo fix</div><div class="opp-badges"><span class="badge-ppc">PPC</span><span class="conf-probable">PROBABLE</span><span class="pri-now">Now</span></div></div>
+      <div class="opp-gap">After 8 PM CPQI is 42% worse. FL/TX/AZ drive 36% of paid inquiries on only 24% of spend. Midday Tue–Thu windows outperform by 19%.</div>
+      <div class="opp-meta">
+        <div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">PPC</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">3–7 days</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Blocker</div><div class="opp-meta-value">Geo conversion partially validated</div></div>
+      </div>
+      <div style="margin-top:10px;background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px;">
+        <div class="lift-row"><span class="lift-label">Conservative</span><span class="lift-value">-4% CPQI</span></div>
+        <div class="lift-row"><span class="lift-label">Expected</span><span class="lift-value expected">-9% CPQI</span></div>
+        <div class="lift-row"><span class="lift-label">Aggressive</span><span class="lift-value">-14% CPQI</span></div>
+      </div>
+    </div>
+
+    <div class="opp-card pinned">
+      <div class="opp-header"><div class="opp-signal">[Score 86] Demand outpaces listing coverage — Archer 6.2:1 ratio</div><div class="opp-badges"><span class="badge-inv">Inventory</span><span class="conf-probable">PROBABLE</span><span class="pri-now">Now</span></div></div>
+      <div class="opp-gap">SR22 and 182 clusters show inquiry growth faster than listing growth. Supply thinness is suppressing repeat-session conversion.</div>
+      <div class="opp-meta">
+        <div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Sales + Broker Success</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">2–4 weeks</div></div>
+        <div class="opp-meta-item"><div class="opp-meta-label">Blocker</div><div class="opp-meta-value">Recruitment package not standardized</div></div>
+      </div>
+    </div>
+
+    <div class="opp-card" style="border-left-color:var(--amber);">
+      <div class="opp-header"><div class="opp-signal">[Score 77] Controller still dominates head terms while GlobalAir improves on model terms</div><div class="opp-badges"><span class="badge-gen">Competitive</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-next">Next</span></div></div>
+      <div class="opp-gap">Position-above rate only 41% on overlapping keywords. Keep generic territory disciplined and attack model-intent clusters.</div>
+    </div>
+
+    <div class="opp-card do-not-act">
+      <div class="opp-header"><div class="opp-signal">⚠ Do Not Act Yet — [Score 58] Buying guides attract traffic but assist proof is partial</div><div class="opp-badges"><span class="badge-content">Content</span><span class="conf-possible">POSSIBLE</span><span class="pri-later">Later</span></div></div>
+      <div class="opp-gap">Buying Guide Assists up 22% but confidence is POSSIBLE. Do not scale content investment on assist claims until attribution is tighter.</div>
+    </div>
+  </div>
+
+  <!-- LEAKAGE MAP -->
+  <div id="tab-leakage" class="tab-content">
+    <div class="section-label mb-16">Leakage Map — Revenue leaving the system</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Area</th><th>Issue</th><th>Why</th><th>Impact</th><th>Action</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-organic">Organic</span></td>
+            <td class="td-primary">Cessna 172 page: 48.2K impressions, 1.1% CTR</td>
+            <td>Title lacks pricing/spec hook. Outranked visually by stronger competitor copy.</td>
+            <td>Est. +530 to +710 additional clicks / 30d</td>
+            <td>Rewrite title/meta, add price range and buyer-intent language, retest within 14 days.</td>
+            <td><span class="conf-confirmed">CONFIRMED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-ppc">PPC</span></td>
+            <td class="td-primary">Paid traffic after 8 PM converts 42% worse than midday</td>
+            <td>Daypart schedule too broad. Weak evening efficiency diluting spend.</td>
+            <td>Est. 7–11% CPQI improvement</td>
+            <td>Reduce bids after 8 PM, reallocate to Tue–Thu 10 AM–4 PM.</td>
+            <td><span class="conf-probable">PROBABLE</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-ppc">Location</span></td>
+            <td class="td-primary">FL/TX/AZ generate 36% of paid inquiries on 24% of spend</td>
+            <td>High-value geos underweighted relative to conversion output.</td>
+            <td>Higher inquiry density without net-new budget</td>
+            <td>Create geo-weighting rules and localized model landing experiences for top states.</td>
+            <td><span class="conf-probable">PROBABLE</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-inv">Listings</span></td>
+            <td class="td-primary">Hidden-price piston listings convert 19 days slower</td>
+            <td>Buyers hesitate when pricing transparency is missing.</td>
+            <td>Faster inquiry and stronger broker satisfaction</td>
+            <td>Flag top-traffic hidden-price listings and prioritize broker remediation outreach.</td>
+            <td><span class="conf-confirmed">CONFIRMED</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPETITIVE -->
+  <div id="tab-competitive" class="tab-content">
+    <div class="section-label mb-16">Competitive Zone Strategy vs Controller.com</div>
+    <div class="grid-2 mb-20">
+      <div>
+        <div class="comp-zone attack"><div class="comp-zone-title">🔴 Model Terms — Attack</div><div class="comp-zone-note">Primary offensive zone for piston growth and share capture. Push 70–85% IS dominance on top piston models.</div></div>
+        <div class="comp-zone compete"><div class="comp-zone-title">🟡 Manufacturer Terms — Compete</div><div class="comp-zone-note">Improve CTR and landing-page alignment for make-level demand. Pursue parity through tight structure.</div></div>
+        <div class="comp-zone build"><div class="comp-zone-title">🔵 Authority — Build</div><div class="comp-zone-note">Win with ownership guides, comparisons, and broker visibility content. Intercept research-stage traffic.</div></div>
+        <div class="comp-zone monitor"><div class="comp-zone-title">⬜ Head Terms — Monitor</div><div class="comp-zone-note">Maintain presence, avoid reckless spend on broad territory. Controller leads by volume.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Competitive Signals</div>
+        <div class="soft-list">
+          <div class="soft-row"><span class="row-label">Controller gap — Cessna 182</span><span class="row-value">18 terms, narrowing</span></div>
+          <div class="soft-row"><span class="row-label">Auction Position Above Rate</span><span class="row-value">41% ▲ +7%</span></div>
+          <div class="soft-row"><span class="row-label">Demand / Inventory — Archer</span><span class="row-value">6.2:1 ▲ +12%</span></div>
+          <div class="soft-row"><span class="row-label">Model-level share trend</span><span class="row-value up">Improving</span></div>
+          <div class="soft-row"><span class="row-label">Head-term parity</span><span class="row-value down">Still weak</span></div>
+        </div>
+        <div class="note-text">Strategy: win on depth and specificity, not broad coverage. Every model-level win compounds faster than one generic term.</div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zone</th><th>GlobalAir Position</th><th>Controller Position</th><th>Overlap</th><th>Response</th></tr></thead>
+        <tbody>
+          <tr><td class="td-primary">Head terms</td><td>24% IS</td><td>63% IS</td><td>High</td><td>Maintain presence, capture remarketing pools.</td></tr>
+          <tr><td class="td-primary">Manufacturer terms</td><td>41% IS</td><td>52% IS</td><td>High</td><td>Pursue parity through tighter structure and CVR gains.</td></tr>
+          <tr><td class="td-primary">Model terms</td><td>72% IS</td><td>78% IS</td><td>Very high</td><td>Primary attack zone. Push to 80–85% on top piston models.</td></tr>
+          <tr><td class="td-primary">Conquesting</td><td>Selective</td><td>Broad</td><td>Targeted</td><td>Conquest only when landing depth is superior and economics justify spend.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TRUST -->
+  <div id="tab-trust" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🔒 Data Trust Status</div>
+        <div class="trust-module"><div class="trust-module-title">Confirmed blockers</div><ul><li>PPC conversion actions unconfirmed for jet expansion</li><li>Call tracking coverage incomplete at 74%</li><li>GA4 contamination remains active since June 2023</li></ul></div>
+        <div class="trust-module"><div class="trust-module-title">Watchlist</div><ul><li>Content assist claims still modeled only</li><li>Location-level paid data partially validated</li><li>Authority composite not board-safe for Jeffrey reporting</li></ul></div>
+        <div style="margin-top:10px;background:var(--navy-tint-soft);border:1px solid var(--navy-tint);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--navy);">Jeffrey view: confirmed-only rendering with source and freshness metadata preserved. Modeled/POSSIBLE signals suppressed.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Domain Signal Mix</div>
+        <div class="soft-list">
+          <div class="soft-row"><span class="row-label">Qualified Inquiries</span><span><span class="conf-confirmed">CONFIRMED</span></span></div>
+          <div class="soft-row"><span class="row-label">Advertiser Revenue</span><span><span class="conf-confirmed">CONFIRMED</span></span></div>
+          <div class="soft-row"><span class="row-label">Organic Share</span><span><span class="conf-probable">PROBABLE</span></span></div>
+          <div class="soft-row"><span class="row-label">Paid Signals</span><span><span class="conf-probable">PROBABLE</span></span></div>
+          <div class="soft-row"><span class="row-label">Broker Risk Index</span><span><span class="conf-probable">PROBABLE</span></span></div>
+          <div class="soft-row"><span class="row-label">Authority vs Controller</span><span><span class="conf-possible">POSSIBLE</span></span></div>
+          <div class="soft-row"><span class="row-label">Content Assist</span><span><span class="conf-possible">POSSIBLE</span></span></div>
+        </div>
+        <div class="note-text">Decision rules: act on CONFIRMED signals first. Treat PROBABLE as directional for optimization. POSSIBLE signals require attribution cleanup before scaling.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;text-align:center;font-size:12px;color:var(--text-faint);">Mockup only. All figures use placeholder data for visual planning. Av/IntelOS · Page 01</div>
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setRole(role, btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const views = {
+    casey:[{n:'Weekly Operator View',d:'Pinned opportunities, blockers, and fast wins.'},{n:'Piston Growth Focus',d:'Model domination, demand gaps, and geo efficiency.'},{n:'Churn Save Queue',d:'Broker risk, renewal timing, and ROI proof gaps.'}],
+    clay:[{n:'Executive Efficiency View',d:'CPQI, revenue, blockers, and scale safety.'},{n:'Revenue Risk',d:'Retention risk, concentration risk, and top actions.'},{n:'Operational Blockers',d:'Data health and execution dependencies.'}],
+    jeffrey:[{n:'Board-Safe Confirmed View',d:'Confirmed only. Revenue, inquiries, and risk.'},{n:'Revenue + Risk',d:'Plain-language confirmed business trajectory.'},{n:'Confirmed Only',d:'No modeled opportunity logic shown.'}]
+  };
+  document.getElementById('saved-views-list').innerHTML = views[role].map(v=>`<div class="saved-view-btn"><div class="sv-name">${v.n}</div><div class="sv-desc">${v.d}</div></div>`).join('');
+}
+</script>
+</body>
+</html>

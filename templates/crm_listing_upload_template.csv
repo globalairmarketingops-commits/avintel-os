@@ -1,0 +1,6 @@
+listing_id,make,model,category,detail_views,inquiries,photo_count,price_visible
+GA-12345,Cessna,172 Skyhawk,piston,340,12,18,true
+GA-12346,Beechcraft,Baron 58,piston,210,8,24,true
+GA-12347,Cirrus,SR22T,piston,480,22,30,true
+GA-12348,Robinson,R44 Raven II,helicopter,150,5,12,true
+GA-12349,Pilatus,PC-12 NGX,turboprop,520,15,28,false

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Av/IntelOS — GA4 Analytics Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* AvIntelOS Shared Design System — matches Av/SocialOS light theme */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#102297;--navy-deep:#0c1340;--navy-tint:#d6dcf7;--navy-tint-soft:#eef0fb;
+  --green:#97CB00;--green-dark:#5e8200;--green-text:#3a5c00;
+  --blue:#1877f2;--red:#d32f2f;--amber:#f59e0b;--violet:#7c3aed;--cyan:#0891b2;
+  --text-primary:#0c1340;--text-secondary:#374151;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:#d1d5db;--border-soft:#e5e7eb;--surface:#fff;--bg:#f4f6fb;--bg-soft:#eef0fb;
+  --radius:10px;--radius-lg:14px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(16,34,151,.08),0 4px 16px rgba(16,34,151,.06);
+  --shadow-md:0 2px 8px rgba(16,34,151,.10),0 8px 24px rgba(16,34,151,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(16,34,151,.18);border-radius:3px;}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,19,64,.3);}
+.logo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;display:flex;align-items:center;gap:2px;}
+.logo-prefix{color:var(--green);}
+.logo-sep{color:rgba(255,255,255,.18);margin:0 12px;font-weight:300;font-size:18px;}
+.logo-page{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.07em;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-role{display:flex;gap:4px;}
+.role-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.role-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);}
+.hdr-date{font-size:12px;color:rgba(255,255,255,.4);}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+
+/* PAGE HERO */
+.page-hero{padding:16px 32px 0;max-width:1560px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.02em;}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:3px;max-width:720px;}
+
+/* TAB BAR */
+.tab-bar{padding:12px 32px 0;max-width:1560px;margin:0 auto;}
+.tab-bar-inner{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-muted);background:var(--surface);box-shadow:var(--shadow);white-space:nowrap;}
+.tab-btn:hover{transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(16,34,151,.3);}
+
+/* BODY */
+.page-body{padding:16px 32px 56px;max-width:1560px;margin:0 auto;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* CONFIDENCE PILLS */
+.conf-confirmed{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-probable{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-possible{background:#fffbeb;color:#92400e;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* PRIORITY PILLS */
+.pri-now{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-next{background:#fef3c7;color:#78350f;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-later{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* STATUS PILLS */
+.status-good{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;}
+.status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.status-bad{background:#fff1f0;color:var(--red);border:1px solid #fecaca;}
+.status-pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* KPI METRIC CARDS */
+.metric-grid{display:grid;gap:12px;}
+.metric-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:all .2s;}
+.metric-card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;transform:translateY(-2px);}
+.metric-card:hover .m-label,.metric-card:hover .m-value,.metric-card:hover .m-sub{color:rgba(255,255,255,.9)!important;}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px;}
+.m-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;}
+.m-sub{font-size:11px;color:var(--text-muted);}
+.m-good{color:var(--green-text)!important;}.m-warn{color:#92400e!important;}.m-bad{color:var(--red)!important;}
+
+/* SECTION LABEL */
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(16,34,151,.2),transparent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-soft);border-left:4px solid var(--green);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card-plain{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;border-left-color:transparent;transform:translateY(-1px);box-shadow:0 8px 28px rgba(16,34,151,.22);}
+.card:hover .card-title,.card:hover .card-meta,.card:hover .row-label,.card:hover .row-value,.card:hover .row-note,.card:hover .note-text{color:rgba(255,255,255,.88)!important;}
+.card:hover .soft-row,.card:hover .mini-panel{border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;}
+.card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-meta{font-size:12px;color:var(--text-muted);margin-left:auto;font-weight:400;}
+.card-red{border-left-color:var(--red)!important;}
+.card-amber{border-left-color:var(--amber)!important;}
+
+/* SOFT ROWS */
+.soft-list{display:grid;gap:6px;}
+.soft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);font-size:12px;}
+.row-label{color:var(--text-muted);}
+.row-value{color:var(--text-primary);font-weight:700;}
+.row-note{color:var(--text-muted);font-size:11px;}
+.note-text{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+/* OPPORTUNITY CARDS */
+.opp-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.opp-card:last-child{margin-bottom:0;}
+.opp-card.pinned{border-left:3px solid var(--green-dark);}
+.opp-card.do-not-act{border-left:3px solid var(--amber);background:#fffbeb;}
+.opp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.opp-signal{font-size:13px;font-weight:700;color:var(--text-primary);flex:1;}
+.opp-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opp-gap{font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.opp-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opp-meta-item{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 10px;}
+.opp-meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:3px;}
+.opp-meta-value{font-size:12px;font-weight:600;color:var(--text-primary);}
+.lift-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lift-label{color:var(--text-muted);}
+.lift-value{font-weight:600;color:var(--text-primary);}
+.lift-value.expected{color:var(--green-dark);}
+
+/* TABLE */
+.table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border-soft);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 12px;text-align:left;background:var(--bg-soft);border-bottom:1px solid var(--border-soft);position:sticky;top:0;}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-secondary);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(16,34,151,.02);}
+.td-primary{font-weight:600;color:var(--text-primary);}
+.td-code{font-family:monospace;font-size:11px;}
+
+/* MINI PANEL */
+.mini-panel{padding:12px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);}
+.mini-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px;}
+.mini-value{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.mini-note{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+/* SPARKLINE */
+.spark-wrap{display:flex;align-items:flex-end;gap:2px;height:32px;}
+.spark-bar{background:var(--navy);border-radius:2px 2px 0 0;flex:1;min-width:4px;opacity:.7;}
+
+/* CHART SHELL */
+.chart-shell{height:180px;border-radius:var(--radius);background:linear-gradient(180deg,#fafbff,#fff);border:1px solid var(--border-soft);position:relative;overflow:hidden;padding:10px;}
+.gridlines{position:absolute;inset:0;background-image:linear-gradient(to top,rgba(209,213,219,.5) 1px,transparent 1px);background-size:100% 40px;pointer-events:none;}
+.line-wrap{position:absolute;left:10px;right:10px;top:12px;bottom:20px;}
+.line-wrap svg{width:100%;height:100%;}
+.legend-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px;}
+.legend-label{font-size:11px;color:var(--text-muted);}
+
+/* SAVED VIEWS */
+.saved-views-list{display:grid;gap:8px;}
+.saved-view-btn{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;text-align:left;cursor:pointer;transition:all .15s;width:100%;}
+.saved-view-btn:hover{border-color:var(--navy);background:var(--navy-tint-soft);}
+.sv-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+.sv-desc{font-size:11px;color:var(--text-muted);}
+
+/* TRUST MODULE */
+.trust-module{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;}
+.trust-module-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.trust-module li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0;}
+.trust-module li::before{content:'• ';color:var(--navy);}
+
+/* ACTION FRAMEWORK */
+.action-block{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;}
+.action-block-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.action-block li{font-size:12px;color:var(--text-muted);line-height:1.6;list-style:none;}
+.action-block li::before{content:'→ ';color:var(--navy);font-weight:600;}
+
+/* LEAKAGE TABLE BADGES */
+.badge-organic{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ppc{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-rev{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-inv{background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-data{background:#fff1f0;color:var(--red);border:1px solid #fecaca;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ga4{background:#f0f9ff;color:#075985;border:1px solid #bae6fd;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-content{background:#faf5ff;color:#6b21a8;border:1px solid #e9d5ff;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-gen{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+
+/* PROGRESS BAR */
+.prog-bar{height:8px;border-radius:20px;background:#e5e7eb;overflow:hidden;border:1px solid var(--border-soft);}
+.prog-fill{height:100%;border-radius:20px;}
+.prog-green{background:var(--green);}
+.prog-amber{background:var(--amber);}
+.prog-red{background:var(--red);}
+.prog-blue{background:var(--blue);}
+
+/* INCIDENT CARDS */
+.incident-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.incident-card.broken{border-left:4px solid var(--red);background:#fff5f5;}
+.incident-card.warning{border-left:4px solid var(--amber);background:#fffbeb;}
+.incident-card.healthy{border-left:4px solid var(--green-dark);}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.inc-title{font-size:13px;font-weight:700;color:var(--text-primary);}
+.inc-body{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;}
+.inc-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);}
+.inc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.grid-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;}
+.grid-main{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;}
+.grid-stack{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;}
+.mb-16{margin-bottom:16px;}.mb-20{margin-bottom:20px;}.mb-12{margin-bottom:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.flex-center{display:flex;align-items:center;gap:8px;}
+.space-y>*+*{margin-top:12px;}
+.up{color:var(--green-text);font-weight:600;}.down{color:var(--red);font-weight:600;}.flat{color:var(--text-muted);}
+
+@media(max-width:1200px){.grid-hero,.grid-main,.grid-stack,.grid-2{grid-template-columns:1fr;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.page-hero,.tab-bar,.page-body{padding-left:16px;padding-right:16px;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr;}}
+
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="flex-center">
+    <div class="logo"><span class="logo-prefix">Av/</span>INTELOS</div>
+    <div class="logo-sep">|</div>
+    <div class="logo-page">GA4 Analytics Hub</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-role">
+      <button class="role-btn active" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Casey</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Clay</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Jeffrey</button>
+    </div>
+    <span class="hdr-date">Mar 30, 2026 · Sprint 6</span>
+    <button class="hdr-btn">↻ Refresh</button>
+  </div>
+</header>
+<div class="page-hero">
+  <div class="hero-eyebrow">GlobalAir.com / Av/IntelOS</div>
+  <h1 class="hero-title">GA4 Analytics Hub</h1>
+  <p class="hero-sub">Measurement integrity, clean session analysis, channel attribution, landing page performance, event tier governance, and contamination controls.</p>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner"><button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button><button class="tab-btn" onclick="switchTab('opportunities',this)">Opportunities</button><button class="tab-btn" onclick="switchTab('channels',this)">Channels</button><button class="tab-btn" onclick="switchTab('landing',this)">Landing Pages</button><button class="tab-btn" onclick="switchTab('events',this)">Events</button><button class="tab-btn" onclick="switchTab('trust',this)">Trust</button></div></div>
+<div class="page-body">
+<div id="tab-overview" class="tab-content active">
+<div class="section-label mb-16">GA4 Measurement KPIs</div>
+<div class="grid-5 mb-20">
+<div class="metric-card"><div class="m-label">Real Engagement Rate</div><div class="m-value m-warn">68.9%</div><div class="m-sub"><span class="up">▲ +2.1 pts WoW</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div><div class="m-sub" style="margin-top:5px;">Clean session logic</div></div>
+<div class="metric-card"><div class="m-label">Reported Engagement</div><div class="m-value m-bad">17.3%</div><div class="m-sub"><span class="flat">Contaminated — do not use</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div><div class="m-sub" style="margin-top:5px;">Native GA4 — unsafe</div></div>
+<div class="metric-card"><div class="m-label">Clean Sessions</div><div class="m-value">48,240</div><div class="m-sub"><span class="up">▲ +8.4% WoW</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div><div class="m-sub" style="margin-top:5px;">GA4 filtered traffic</div></div>
+<div class="metric-card"><div class="m-label">Validation Coverage</div><div class="m-value m-warn">74%</div><div class="m-sub"><span class="up">▲ +5 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div><div class="m-sub" style="margin-top:5px;">Event QA registry</div></div>
+<div class="metric-card"><div class="m-label">Attribution Integrity</div><div class="m-value m-bad">Diagnose</div><div class="m-sub"><span class="down">2 blockers active</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div><div class="m-sub" style="margin-top:5px;">GA4 + call tracking audit</div></div>
+</div>
+<div style="background:#fff5f5;border:1px solid rgba(211,47,47,.2);border-left:4px solid var(--red);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy);">⚠ GA4 Contamination Active Since June 2023 — Email_Open_ events inflate reported engagement to 17.3%. Real engagement estimate: 68.9%. Do not use native engagement for decisioning.</div>
+<div class="grid-2">
+<div class="card">
+<div class="card-title">Channel Performance — Clean Sessions</div>
+<div class="soft-list">
+<div class="soft-row"><span class="row-label">Organic Search</span><span class="row-value">18,240 sessions · 186 conversions · <span class="conf-probable">PROBABLE</span></span></div>
+<div class="soft-row"><span class="row-label">Paid Search</span><span class="row-value">12,440 sessions · 143 conversions · <span class="conf-probable">PROBABLE</span></span></div>
+<div class="soft-row"><span class="row-label">Direct ⚠</span><span class="row-value m-warn">6,840 sessions · may contain contamination</span></div>
+<div class="soft-row"><span class="row-label">Email ⚠</span><span class="row-value m-bad">3,910 sessions · Email_Open_ contaminated</span></div>
+<div class="soft-row"><span class="row-label">Referral</span><span class="row-value">2,180 sessions · usable directionally</span></div>
+<div class="soft-row"><span class="row-label">Social</span><span class="row-value">2,630 sessions · audience-building role</span></div>
+</div>
+</div>
+<div class="card">
+<div class="card-title">Top Landing Page Issues</div>
+<div class="soft-list">
+<div class="soft-row"><span class="row-label" style="font-family:monospace;font-size:11px;">/aircraft-for-sale/cessna-172</span><span class="row-value m-bad">1.4% CVR · 62% bounce</span></div>
+<div class="soft-row"><span class="row-label" style="font-family:monospace;font-size:11px;">/aircraft-for-sale/cirrus-sr22</span><span class="row-value m-good">2.6% CVR — winning template</span></div>
+<div class="soft-row"><span class="row-label" style="font-family:monospace;font-size:11px;">/article/cessna-172-operating-cost</span><span class="row-value m-warn">0.4% CVR · weak assist path</span></div>
+<div class="soft-row"><span class="row-label" style="font-family:monospace;font-size:11px;">/aircraft-for-sale/piper-archer</span><span class="row-value m-warn">0.9% CVR · demand exists</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="tab-opportunities" class="tab-content">
+<div class="section-label mb-16">GA4 Opportunity Queue</div>
+<div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 97] Reported GA4 engagement is contaminated and misleading — stop using</div><div class="opp-badges"><span class="badge-ga4">Measurement</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">17.3% reported vs 68.9% real. Email_Open_ events continue inflating all engagement-based reporting. Teams making decisions on this data are operating blind.</div><div class="opp-meta"><div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Analytics</div></div><div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">Immediate</div></div><div class="opp-meta-item"><div class="opp-meta-label">Action</div><div class="opp-meta-value">Default to clean-only views</div></div></div></div>
+<div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 95] Paid + call-assisted conversion pathways remain partially unvalidated</div><div class="opp-badges"><span class="badge-ga4">Attribution</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Validation coverage only 74%. Call inquiry event still marked review required. Jet expansion remains blocked by measurement confidence.</div><div class="opp-meta"><div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Analytics + DevOps</div></div><div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">1–2 weeks</div></div><div class="opp-meta-item"><div class="opp-meta-label">Lift</div><div class="opp-meta-value">Unlock clean paid scaling</div></div></div></div>
+<div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 93] High-impression landing pages are under-clicking and over-bouncing</div><div class="opp-badges"><span class="badge-ga4">Landing Page</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Cessna 172: 48.2K impressions, 1.4% CVR, 62% bounce. Operating-cost content page has high traffic but weak downstream path.</div><div class="opp-meta"><div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">SEO + Content + CRO</div></div><div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">7–14 days</div></div><div class="opp-meta-item"><div class="opp-meta-label">Lift Expected</div><div class="opp-meta-value">+8% landing efficiency</div></div></div></div>
+<div class="opp-card"><div class="opp-header"><div class="opp-signal">[Score 82] Organic Search outperforming but channel-to-page handoff fragmented</div><div class="opp-badges"><span class="badge-organic">Channel</span><span class="conf-probable">PROBABLE</span><span class="pri-next">Next</span></div></div><div class="opp-gap">Organic Search drives 18,240 sessions and 186 conversions. Top organic pages still show material leakage that channel efficiency is masking.</div></div>
+</div>
+
+<div id="tab-channels" class="tab-content">
+<div class="section-label mb-16">Channel Attribution Table — Use clean engagement only</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Channel</th><th>Sessions</th><th>Eng Rate (Reported)</th><th>Eng Rate (Real)</th><th>Conversions</th><th>Revenue</th><th>Clean?</th><th>Confidence</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td class="td-primary">Organic Search</td><td>18,240</td><td>21.4%</td><td>71.8%</td><td>186</td><td>$118.4K</td><td><span class="conf-confirmed">✓ Clean</span></td><td><span class="conf-probable">PROBABLE</span></td><td>Primary scale channel.</td></tr>
+<tr><td class="td-primary">Paid Search</td><td>12,440</td><td>18.1%</td><td>66.2%</td><td>143</td><td>$96.7K</td><td><span class="conf-confirmed">✓ Clean</span></td><td><span class="conf-probable">PROBABLE</span></td><td>Reliable for directional optimization.</td></tr>
+<tr style="background:#fff5f5;"><td class="td-primary">Direct ⚠</td><td>6,840</td><td>19.7%</td><td>63.4%</td><td>54</td><td>$38.2K</td><td><span class="conf-possible">⚠ Risk</span></td><td><span class="conf-possible">POSSIBLE</span></td><td>May contain unattributed email contamination.</td></tr>
+<tr style="background:#fff5f5;"><td class="td-primary">Email ⚠</td><td>3,910</td><td><span class="m-bad">8.4% — unsafe</span></td><td>58.8%</td><td>28</td><td>$12.9K</td><td><span style="color:var(--red);font-weight:700;">✗ Contaminated</span></td><td><span class="conf-possible">POSSIBLE</span></td><td>Email_Open_ contamination makes reported engagement unusable.</td></tr>
+<tr><td class="td-primary">Referral</td><td>2,180</td><td>24.8%</td><td>69.9%</td><td>18</td><td>$8.1K</td><td><span class="conf-confirmed">✓ Clean</span></td><td><span class="conf-probable">PROBABLE</span></td><td>Directional channel opportunity work.</td></tr>
+<tr><td class="td-primary">Social</td><td>2,630</td><td>16.2%</td><td>61.1%</td><td>9</td><td>$4.7K</td><td><span class="conf-confirmed">✓ Clean</span></td><td><span class="conf-probable">PROBABLE</span></td><td>Audience-building role, not direct response.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="tab-landing" class="tab-content">
+<div class="section-label mb-16">Landing Page Performance</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Page</th><th>Category</th><th>Impressions</th><th>Sessions</th><th>CVR</th><th>Bounce</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td class="td-code">/aircraft-for-sale/cessna-172</td><td>Piston</td><td>48.2K</td><td>8,420</td><td class="m-bad">1.4%</td><td class="m-bad">62%</td><td>High visibility, weak click capture and above-average bounce.</td><td>Improve title/meta hook, tighten above-the-fold trust signals.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+<tr><td class="td-code">/aircraft-for-sale/cirrus-sr22</td><td>Piston</td><td>31.6K</td><td>6,980</td><td class="m-good">2.6%</td><td>44%</td><td>Winning page. Strong conversion profile.</td><td>Use as template for adjacent model pages.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+<tr><td class="td-code">/article/cessna-172-operating-cost</td><td>Content</td><td>22.1K</td><td>4,140</td><td class="m-bad">0.4%</td><td class="m-bad">71%</td><td>Traffic enters, but inquiry assist path is weak.</td><td>Add stronger CTA modules, related listings, and email capture.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+<tr><td class="td-code">/aircraft-for-sale/piper-archer</td><td>Piston</td><td>18.8K</td><td>2,940</td><td class="m-warn">0.9%</td><td class="m-warn">67%</td><td>Demand exists but page under-converts.</td><td>Audit inventory depth, pricing visibility, and query alignment.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="tab-events" class="tab-content">
+<div class="section-label mb-16">Event Tier Registry</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Event</th><th>Tier</th><th>Value Weight</th><th>Status</th><th>Owner</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td class="td-primary">qualified_inquiry</td><td><span class="conf-confirmed">Tier 1</span></td><td>100</td><td><span class="status-pill status-good">Validated</span></td><td>Analytics</td><td>Primary optimization event.</td></tr>
+<tr style="background:#fff5f5;"><td class="td-primary">call_inquiry</td><td><span class="conf-confirmed">Tier 1</span></td><td>120</td><td><span class="status-pill status-warn">Review Required</span></td><td>Analytics + DevOps</td><td>Call coverage incomplete at 74%.</td></tr>
+<tr><td class="td-primary">broker_email_click</td><td><span class="conf-confirmed">Tier 1</span></td><td>90</td><td><span class="status-pill status-good">Validated</span></td><td>Analytics</td><td>Working but low volume.</td></tr>
+<tr><td class="td-primary">pdf_download</td><td><span class="conf-probable">Tier 2</span></td><td>30</td><td><span class="status-pill status-good">Validated</span></td><td>Analytics</td><td>Useful for scoring, not primary optimization.</td></tr>
+<tr style="background:#fff5f5;"><td class="td-primary">form_start</td><td><span class="conf-probable">Tier 2</span></td><td>50</td><td><span class="status-pill status-warn">Review Required</span></td><td>Analytics</td><td>Drop-off analysis needs cleanup.</td></tr>
+<tr><td class="td-primary">model_view_3plus</td><td><span class="conf-possible">Tier 3</span></td><td>20</td><td><span class="status-pill status-warn">Modeled</span></td><td>Analytics</td><td>Directional signal only — do not optimize to.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="tab-trust" class="tab-content">
+<div class="grid-2">
+<div class="card"><div class="card-title">🔒 Measurement Trust Status</div>
+<div class="trust-module"><div class="trust-module-title">Confirmed blockers</div><ul><li>GA4 engagement contaminated since June 2023 — Email_Open_ still active</li><li>Call tracking coverage incomplete at 74%</li><li>Paid conversion validation still unfinished in some segments</li></ul></div>
+<div class="trust-module"><div class="trust-module-title">Decision rules</div><ul><li>Use clean-only engagement estimates for optimization</li><li>Do not reference native GA4 engagement rates in any report to Jeffrey</li><li>Tier 1 events only for optimization signals — never Tier 3</li></ul></div>
+</div>
+<div class="card"><div class="card-title">Saved Views — GA4</div>
+<div class="saved-views-list">
+<div class="saved-view-btn"><div class="sv-name">Measurement Integrity</div><div class="sv-desc">Clean traffic, contamination alerts, and validation blockers.</div></div>
+<div class="saved-view-btn"><div class="sv-name">Clean Traffic Only</div><div class="sv-desc">Directional channel and landing analysis using clean-only logic.</div></div>
+<div class="saved-view-btn"><div class="sv-name">Confirmed Signals Only</div><div class="sv-desc">Confirmed measurement inputs only — Jeffrey-safe.</div></div>
+</div>
+</div>
+</div>
+</div>
+<div style="margin-top:24px;text-align:center;font-size:12px;color:var(--text-faint);">Mockup only. All figures use placeholder data for visual planning. Av/IntelOS · GA4 Analytics Hub</div>
+</div>
+<script>
+function switchTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+</script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Av/IntelOS — Email Lifecycle Command</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* AvIntelOS Shared Design System — matches Av/SocialOS light theme */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#102297;--navy-deep:#0c1340;--navy-tint:#d6dcf7;--navy-tint-soft:#eef0fb;
+  --green:#97CB00;--green-dark:#5e8200;--green-text:#3a5c00;
+  --blue:#1877f2;--red:#d32f2f;--amber:#f59e0b;--violet:#7c3aed;--cyan:#0891b2;
+  --text-primary:#0c1340;--text-secondary:#374151;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:#d1d5db;--border-soft:#e5e7eb;--surface:#fff;--bg:#f4f6fb;--bg-soft:#eef0fb;
+  --radius:10px;--radius-lg:14px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(16,34,151,.08),0 4px 16px rgba(16,34,151,.06);
+  --shadow-md:0 2px 8px rgba(16,34,151,.10),0 8px 24px rgba(16,34,151,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(16,34,151,.18);border-radius:3px;}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,19,64,.3);}
+.logo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;display:flex;align-items:center;gap:2px;}
+.logo-prefix{color:var(--green);}
+.logo-sep{color:rgba(255,255,255,.18);margin:0 12px;font-weight:300;font-size:18px;}
+.logo-page{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.07em;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-role{display:flex;gap:4px;}
+.role-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.role-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);}
+.hdr-date{font-size:12px;color:rgba(255,255,255,.4);}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+
+/* PAGE HERO */
+.page-hero{padding:16px 32px 0;max-width:1560px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.02em;}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:3px;max-width:720px;}
+
+/* TAB BAR */
+.tab-bar{padding:12px 32px 0;max-width:1560px;margin:0 auto;}
+.tab-bar-inner{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-muted);background:var(--surface);box-shadow:var(--shadow);white-space:nowrap;}
+.tab-btn:hover{transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(16,34,151,.3);}
+
+/* BODY */
+.page-body{padding:16px 32px 56px;max-width:1560px;margin:0 auto;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* CONFIDENCE PILLS */
+.conf-confirmed{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-probable{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-possible{background:#fffbeb;color:#92400e;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* PRIORITY PILLS */
+.pri-now{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-next{background:#fef3c7;color:#78350f;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-later{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* STATUS PILLS */
+.status-good{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;}
+.status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.status-bad{background:#fff1f0;color:var(--red);border:1px solid #fecaca;}
+.status-pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* KPI METRIC CARDS */
+.metric-grid{display:grid;gap:12px;}
+.metric-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:all .2s;}
+.metric-card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;transform:translateY(-2px);}
+.metric-card:hover .m-label,.metric-card:hover .m-value,.metric-card:hover .m-sub{color:rgba(255,255,255,.9)!important;}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px;}
+.m-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;}
+.m-sub{font-size:11px;color:var(--text-muted);}
+.m-good{color:var(--green-text)!important;}.m-warn{color:#92400e!important;}.m-bad{color:var(--red)!important;}
+
+/* SECTION LABEL */
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(16,34,151,.2),transparent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-soft);border-left:4px solid var(--green);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card-plain{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;border-left-color:transparent;transform:translateY(-1px);box-shadow:0 8px 28px rgba(16,34,151,.22);}
+.card:hover .card-title,.card:hover .card-meta,.card:hover .row-label,.card:hover .row-value,.card:hover .row-note,.card:hover .note-text{color:rgba(255,255,255,.88)!important;}
+.card:hover .soft-row,.card:hover .mini-panel{border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;}
+.card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-meta{font-size:12px;color:var(--text-muted);margin-left:auto;font-weight:400;}
+.card-red{border-left-color:var(--red)!important;}
+.card-amber{border-left-color:var(--amber)!important;}
+
+/* SOFT ROWS */
+.soft-list{display:grid;gap:6px;}
+.soft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);font-size:12px;}
+.row-label{color:var(--text-muted);}
+.row-value{color:var(--text-primary);font-weight:700;}
+.row-note{color:var(--text-muted);font-size:11px;}
+.note-text{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+/* OPPORTUNITY CARDS */
+.opp-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.opp-card:last-child{margin-bottom:0;}
+.opp-card.pinned{border-left:3px solid var(--green-dark);}
+.opp-card.do-not-act{border-left:3px solid var(--amber);background:#fffbeb;}
+.opp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.opp-signal{font-size:13px;font-weight:700;color:var(--text-primary);flex:1;}
+.opp-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opp-gap{font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.opp-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opp-meta-item{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 10px;}
+.opp-meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:3px;}
+.opp-meta-value{font-size:12px;font-weight:600;color:var(--text-primary);}
+.lift-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lift-label{color:var(--text-muted);}
+.lift-value{font-weight:600;color:var(--text-primary);}
+.lift-value.expected{color:var(--green-dark);}
+
+/* TABLE */
+.table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border-soft);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 12px;text-align:left;background:var(--bg-soft);border-bottom:1px solid var(--border-soft);position:sticky;top:0;}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-secondary);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(16,34,151,.02);}
+.td-primary{font-weight:600;color:var(--text-primary);}
+.td-code{font-family:monospace;font-size:11px;}
+
+/* MINI PANEL */
+.mini-panel{padding:12px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);}
+.mini-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px;}
+.mini-value{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.mini-note{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+/* SPARKLINE */
+.spark-wrap{display:flex;align-items:flex-end;gap:2px;height:32px;}
+.spark-bar{background:var(--navy);border-radius:2px 2px 0 0;flex:1;min-width:4px;opacity:.7;}
+
+/* CHART SHELL */
+.chart-shell{height:180px;border-radius:var(--radius);background:linear-gradient(180deg,#fafbff,#fff);border:1px solid var(--border-soft);position:relative;overflow:hidden;padding:10px;}
+.gridlines{position:absolute;inset:0;background-image:linear-gradient(to top,rgba(209,213,219,.5) 1px,transparent 1px);background-size:100% 40px;pointer-events:none;}
+.line-wrap{position:absolute;left:10px;right:10px;top:12px;bottom:20px;}
+.line-wrap svg{width:100%;height:100%;}
+.legend-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px;}
+.legend-label{font-size:11px;color:var(--text-muted);}
+
+/* SAVED VIEWS */
+.saved-views-list{display:grid;gap:8px;}
+.saved-view-btn{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;text-align:left;cursor:pointer;transition:all .15s;width:100%;}
+.saved-view-btn:hover{border-color:var(--navy);background:var(--navy-tint-soft);}
+.sv-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+.sv-desc{font-size:11px;color:var(--text-muted);}
+
+/* TRUST MODULE */
+.trust-module{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;}
+.trust-module-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.trust-module li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0;}
+.trust-module li::before{content:'• ';color:var(--navy);}
+
+/* ACTION FRAMEWORK */
+.action-block{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;}
+.action-block-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.action-block li{font-size:12px;color:var(--text-muted);line-height:1.6;list-style:none;}
+.action-block li::before{content:'→ ';color:var(--navy);font-weight:600;}
+
+/* LEAKAGE TABLE BADGES */
+.badge-organic{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ppc{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-rev{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-inv{background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-data{background:#fff1f0;color:var(--red);border:1px solid #fecaca;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ga4{background:#f0f9ff;color:#075985;border:1px solid #bae6fd;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-content{background:#faf5ff;color:#6b21a8;border:1px solid #e9d5ff;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-gen{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+
+/* PROGRESS BAR */
+.prog-bar{height:8px;border-radius:20px;background:#e5e7eb;overflow:hidden;border:1px solid var(--border-soft);}
+.prog-fill{height:100%;border-radius:20px;}
+.prog-green{background:var(--green);}
+.prog-amber{background:var(--amber);}
+.prog-red{background:var(--red);}
+.prog-blue{background:var(--blue);}
+
+/* INCIDENT CARDS */
+.incident-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.incident-card.broken{border-left:4px solid var(--red);background:#fff5f5;}
+.incident-card.warning{border-left:4px solid var(--amber);background:#fffbeb;}
+.incident-card.healthy{border-left:4px solid var(--green-dark);}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.inc-title{font-size:13px;font-weight:700;color:var(--text-primary);}
+.inc-body{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;}
+.inc-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);}
+.inc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.grid-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;}
+.grid-main{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;}
+.grid-stack{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;}
+.mb-16{margin-bottom:16px;}.mb-20{margin-bottom:20px;}.mb-12{margin-bottom:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.flex-center{display:flex;align-items:center;gap:8px;}
+.space-y>*+*{margin-top:12px;}
+.up{color:var(--green-text);font-weight:600;}.down{color:var(--red);font-weight:600;}.flat{color:var(--text-muted);}
+
+@media(max-width:1200px){.grid-hero,.grid-main,.grid-stack,.grid-2{grid-template-columns:1fr;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.page-hero,.tab-bar,.page-body{padding-left:16px;padding-right:16px;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr;}}
+.metric-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="flex-center">
+    <div class="logo"><span class="logo-prefix">Av/</span>INTELOS</div>
+    <div class="logo-sep">|</div>
+    <div class="logo-page">Email Lifecycle Command</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-role">
+      <button class="role-btn active" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Casey</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Clay</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Jeffrey</button>
+    </div>
+    <span class="hdr-date">Mar 30, 2026 · Sprint 6</span>
+    <button class="hdr-btn">↻ Refresh</button>
+  </div>
+</header>
+<div class="page-hero">
+  <div class="hero-eyebrow">GlobalAir.com / Av/IntelOS</div>
+  <h1 class="hero-title">Email Lifecycle Command</h1>
+  <p class="hero-sub">Email-assisted inquiry performance, sequence architecture, behavioral scoring, retargeting sync, attribution integrity, and newsletter segmentation governance.</p>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner">
+  <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="switchTab('audiences',this)">Audiences</button>
+  <button class="tab-btn" onclick="switchTab('sequences',this)">Sequences</button>
+  <button class="tab-btn" onclick="switchTab('scoring',this)">Scoring</button>
+  <button class="tab-btn" onclick="switchTab('retargeting',this)">Retargeting Sync</button>
+  <button class="tab-btn" onclick="switchTab('newsletter',this)">Newsletter</button>
+  <button class="tab-btn" onclick="switchTab('attribution',this)">Attribution</button>
+  <button class="tab-btn" onclick="switchTab('trust',this)">Trust</button>
+</div></div>
+<div class="page-body">
+
+<div id="tab-overview" class="tab-content active">
+  <div class="section-label mb-16">Lifecycle KPIs</div>
+  <div class="metric-grid-6 mb-20">
+    <div class="metric-card"><div class="m-label">Email-Assisted QI</div><div class="m-value">34</div><div class="m-sub"><span class="up">▲ +11.5% MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Return Visit Rate</div><div class="m-value">28%</div><div class="m-sub"><span class="up">▲ +4 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Score Progression Rate</div><div class="m-value m-warn">19%</div><div class="m-sub"><span class="up">▲ +2 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Retargeting Audience Sync</div><div class="m-value m-warn">86%</div><div class="m-sub"><span class="up">▲ +6 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Lifecycle Attribution</div><div class="m-value m-bad">Diagnose</div><div class="m-sub"><span class="down">3 blockers active</span></div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Newsletter Segmentation</div><div class="m-value m-warn">61%</div><div class="m-sub"><span class="up">▲ +9 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+  </div>
+  <div style="background:#fff5f5;border:1px solid rgba(211,47,47,.2);border-left:4px solid var(--red);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy);">⚠ Lifecycle Attribution Integrity: Diagnose — gclid pass-through, user ID persistence, and offline broker tagging still limit board-safe lifecycle ROI reporting. Do not present lifecycle ROI as CONFIRMED to Jeffrey.</div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Top Opportunities This Week</div>
+      <div class="opp-card pinned" style="margin-bottom:8px;"><div class="opp-header"><div class="opp-signal">[Score 95] Form-start users not being recovered aggressively enough</div><div class="opp-badges"><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Day 1 recovery, Day 3 FAQ/process reassurance, Day 7 broker trust reinforcement — all need tightening.</div></div>
+      <div class="opp-card pinned" style="margin-bottom:0;"><div class="opp-header"><div class="opp-signal">[Score 93] Model-interest nurture not deep enough on top aircraft pathways</div><div class="opp-badges"><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Viewed-model and PDF-download users need full listings/specs/trends/new-listing progression across priority models.</div></div>
+    </div>
+    <div class="card"><div class="card-title">Sequence Health Summary</div>
+      <div class="soft-list">
+        <div class="soft-row"><span class="row-label">Model Interest Reinforcement</span><span class="row-value m-warn">Needs Work · 11 QI assists</span></div>
+        <div class="soft-row"><span class="row-label">Abandoned Inquiry</span><span class="row-value m-warn">Needs Work · 7 QI assists</span></div>
+        <div class="soft-row"><span class="row-label">Multi-Model Evaluator</span><span class="row-value m-good">Healthy · 5 QI assists</span></div>
+        <div class="soft-row"><span class="row-label">Piston Focus Accelerator</span><span class="row-value m-good">Healthy · 8 QI assists</span></div>
+        <div class="soft-row"><span class="row-label">Post-Inquiry Reinforcement</span><span class="row-value m-warn">Needs Work · not formalized</span></div>
+        <div class="soft-row"><span class="row-label">Inventory Pattern Sequence</span><span class="row-value m-bad">Missing — not yet built</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-audiences" class="tab-content">
+  <div class="section-label mb-16">Audience Architecture — Tiered Segments</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Segment</th><th>Trigger Behavior</th><th>Score Range</th><th>Size (est.)</th><th>Sequence</th><th>Paid Sync</th><th>Issue</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Active Evaluators</td><td>PDF download + model view 3+</td><td>13+ (hot)</td><td>2.1K</td><td>Abandoned Inquiry / Model</td><td>Google + Meta</td><td>Cadence doesn't yet react aggressively enough to score tier.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Engaged Researchers</td><td>Multiple model page views</td><td>6–12 (warm)</td><td>6.4K</td><td>Model Interest Reinforcement</td><td>Google + Meta + YouTube</td><td>Good base but some models don't have full sequence depth.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Casual Researchers</td><td>Single page view, no repeat</td><td>0–5 (cold)</td><td>18.2K</td><td>Newsletter / Top-of-funnel</td><td>YouTube</td><td>Largest pool — worth investing in progression logic.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Post-Inquiry Users</td><td>Inquiry submitted</td><td>n/a</td><td>1.2K</td><td>Post-Inquiry Reinforcement</td><td>Meta / YouTube</td><td>Should reinforce satisfaction, not just conversion chase.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-sequences" class="tab-content">
+  <div class="section-label mb-16">Sequence Performance</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sequence</th><th>Trigger</th><th>Cadence</th><th>Goal</th><th>Assisted QI</th><th>Status</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Model Interest Reinforcement</td><td>Viewed model / PDF download</td><td>Day 1 / 3 / 7 / 14</td><td>Push to inquiry</td><td class="m-warn">11</td><td><span class="status-pill status-warn">Needs Work</span></td><td>Not all model clusters have full depth.</td><td>Expand dynamic model-specific content coverage.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Abandoned Inquiry</td><td>Form start without submit</td><td>Day 1 / 3 / 7</td><td>Recover inquiry</td><td class="m-warn">7</td><td><span class="status-pill status-warn">Needs Work</span></td><td>Needs more trust and process reinforcement.</td><td>Improve FAQ, buying-process, and broker trust modules.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Multi-Model Evaluator</td><td>Viewed 2+ models same category</td><td>3-email compare stack</td><td>Guide evaluation</td><td class="m-good">5</td><td><span class="status-pill status-good">Healthy</span></td><td>Strong concept — room for comparison-table depth.</td><td>Increase ownership and financing comparison content.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Piston Focus Accelerator</td><td>Piston-heavy behavior</td><td>Rolling inventory cadence</td><td>Strengthen piston/broker value</td><td class="m-good">8</td><td><span class="status-pill status-good">Healthy</span></td><td>Good broker-support layer — needs tighter score sync.</td><td>Improve urgency by score tier and sync with paid channels.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Post-Inquiry Reinforcement</td><td>Inquiry submitted</td><td>Immediate + checklist</td><td>Increase broker satisfaction</td><td>n/a</td><td><span class="status-pill status-warn">Needs Work</span></td><td>Exists conceptually but not fully formalized.</td><td>Make next-steps, financing, inspection emails a formal series.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Inventory Pattern Sequence</td><td>New inventory shifts</td><td>Conditional</td><td>Adapt to inventory patterns</td><td>n/a</td><td><span class="status-pill status-bad">Missing</span></td><td>Quarterly SOP implies this but it's not operationalized.</td><td>Create quarterly sequence launch process tied to inventory shifts.</td><td><span class="conf-possible">POSSIBLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-scoring" class="tab-content">
+  <div class="section-label mb-16">Behavioral Scoring Architecture</div>
+  <div class="grid-3 mb-16">
+    <div class="card-plain"><div class="card-title">Score 0–5 — Cold</div><div class="soft-list"><div class="soft-row"><span class="row-label">Behavior</span><span class="row-value">Single visit, no repeat</span></div><div class="soft-row"><span class="row-label">Cadence</span><span class="row-value">Newsletter / top-of-funnel only</span></div><div class="soft-row"><span class="row-label">Paid sync</span><span class="row-value">YouTube awareness only</span></div></div></div>
+    <div class="card-plain" style="border-left:4px solid var(--amber);"><div class="card-title">Score 6–12 — Warm</div><div class="soft-list"><div class="soft-row"><span class="row-label">Behavior</span><span class="row-value">Multiple model views</span></div><div class="soft-row"><span class="row-label">Cadence</span><span class="row-value">Model interest reinforcement</span></div><div class="soft-row"><span class="row-label">Paid sync</span><span class="row-value">Google + Meta + YouTube</span></div></div></div>
+    <div class="card-plain" style="border-left:4px solid var(--green-dark);"><div class="card-title">Score 13+ — Hot</div><div class="soft-list"><div class="soft-row"><span class="row-label">Behavior</span><span class="row-value">PDF download + model view 3+</span></div><div class="soft-row"><span class="row-label">Cadence</span><span class="row-value">Abandoned inquiry / high-urgency</span></div><div class="soft-row"><span class="row-label">Paid sync</span><span class="row-value">All channels — suppress after inquiry</span></div></div></div>
+  </div>
+  <div class="card"><div class="card-title">Scoring Gap — [Score 81] Score progression not yet operationalized in cadence control</div>
+    <div class="opp-gap">Users are scored, but messaging and suppression still do not always adapt aggressively enough to score changes. Some sequence logic still looks more static than score-reactive.</div>
+    <div class="note-text">Action: Tie email cadence, content density, and suppression logic more tightly to score-tier changes across all major sequences. Owner: Lifecycle Ops. Time to Impact: 2–4 weeks.</div>
+  </div>
+</div>
+
+<div id="tab-retargeting" class="tab-content">
+  <div class="section-label mb-16">Retargeting Audience Sync</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Segment</th><th>Destinations</th><th>Message Mirror</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Model viewers</td><td>Google Ads / Meta / YouTube</td><td>Listings + specs + recent inventory</td><td>Mostly synced but model-specific creative quality varies.</td><td>Mirror the exact email theme and suppress after inquiry progression.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">PDF downloaders</td><td>Google Ads / Meta</td><td>Specs + ownership + compare paths</td><td>Very high signal but not always split cleanly from general viewers.</td><td>Create spec-focused creative and isolate from broader traffic pools.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">High-score users</td><td>Google Ads / Meta / YouTube</td><td>Urgency + trust + broker/value reinforcement</td><td>Audience exists but score-aware exclusions need more discipline.</td><td>Control frequency and adapt creative by score tier.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Post-inquiry users</td><td>Meta / YouTube</td><td>What happens next + inspection + financing</td><td>Should reinforce satisfaction, not just conversion chase.</td><td>Use broker-support creative and suppress generic sales pressure.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-newsletter" class="tab-content">
+  <div class="section-label mb-16">Newsletter Segmentation Status</div>
+  <div class="card" style="margin-bottom:14px;"><div class="card-title">Segmentation Coverage — 61% · Target: segment-first sends for all major categories</div>
+    <div class="opp-gap">Moving away from one-newsletter-to-all. But some sends are still too broad. Piston, jet, finance, maintenance, and model-specific sends should diverge more clearly.</div>
+    <div class="note-text">Action: Finalize segmented newsletter architecture and apply suppression rules so category-heavy users do not keep receiving irrelevant blasts. Owner: Lifecycle Lead. Time: 2–4 weeks.</div>
+  </div>
+  <div class="grid-3">
+    <div class="card-plain"><div class="card-title">Piston Focus Newsletter</div><div class="soft-list"><div class="soft-row"><span class="row-label">Audience</span><span class="row-value">Piston model viewers</span></div><div class="soft-row"><span class="row-label">Content</span><span class="row-value">Listings · Market trends · Ownership</span></div><div class="soft-row"><span class="row-label">Status</span><span class="row-value m-warn">Partially segmented</span></div></div></div>
+    <div class="card-plain"><div class="card-title">Jet / Premium Newsletter</div><div class="soft-list"><div class="soft-row"><span class="row-label">Audience</span><span class="row-value">Jet and turbine viewers</span></div><div class="soft-row"><span class="row-label">Content</span><span class="row-value">Charter · Purchase · Finance</span></div><div class="soft-row"><span class="row-label">Status</span><span class="row-value m-bad">Not yet separated</span></div></div></div>
+    <div class="card-plain"><div class="card-title">Market Intelligence (AvBlast)</div><div class="soft-list"><div class="soft-row"><span class="row-label">Audience</span><span class="row-value">All subscribers 100K+</span></div><div class="soft-row"><span class="row-label">Content</span><span class="row-value">News · Market pulse · Authority</span></div><div class="soft-row"><span class="row-label">Status</span><span class="row-value m-warn">Broadcast only — no scoring suppression</span></div></div></div>
+  </div>
+</div>
+
+<div id="tab-attribution" class="tab-content">
+  <div class="section-label mb-16">Attribution Layer Audit</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Layer</th><th>Status</th><th>Coverage</th><th>Issue</th><th>Next Move</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff5f5;"><td class="td-primary">gclid capture on email click</td><td><span class="status-pill status-warn">Partial</span></td><td class="m-warn">72%</td><td>Still not universal on every tracked lifecycle path.</td><td>Complete capture on all high-value click paths.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">user ID persistence</td><td><span class="status-pill status-bad">Weak</span></td><td class="m-bad">43%</td><td>Identity stitching is the biggest lifecycle measurement limiter.</td><td>Improve persistence across return sessions and devices.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">user ID pass-through to inquiry form</td><td><span class="status-pill status-warn">Partial</span></td><td class="m-warn">61%</td><td>Some submissions lose lifecycle provenance before backend storage.</td><td>Standardize hidden fields and backend mapping.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">offline tagging in broker backend</td><td><span class="status-pill status-bad">Weak</span></td><td class="m-bad">29%</td><td>Lifecycle influence becomes harder to prove once broker handoff begins.</td><td>Close backend status and source tagging loop.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">enhanced conversions</td><td><span class="status-pill status-warn">Partial</span></td><td class="m-warn">54%</td><td>Better than nothing, but not complete enough for scale-safe lifecycle reporting.</td><td>Increase form pass-through and hashed match discipline.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-trust" class="tab-content">
+  <div class="grid-2">
+    <div class="card"><div class="card-title">🔒 Lifecycle Trust Status</div>
+      <div class="trust-module"><div class="trust-module-title">Confirmed blockers</div><ul><li>gclid capture only 72% coverage — not yet universal</li><li>User ID persistence at 43% — biggest lifecycle measurement gap</li><li>Offline broker tagging at 29% — ROI claims remain partial</li></ul></div>
+      <div class="trust-module"><div class="trust-module-title">Decision rules</div><ul><li>Lifecycle ROI should remain confidence-aware in all executive reporting</li><li>Email-assisted QI is PROBABLE — do not treat as CONFIRMED to Jeffrey</li><li>Return visit rate and score progression are CONFIRMED and safe to report</li></ul></div>
+    </div>
+    <div class="card"><div class="card-title">Saved Views</div><div class="saved-views-list">
+      <div class="saved-view-btn"><div class="sv-name">Weekly Lifecycle Priorities</div><div class="sv-desc">Top sequence gaps, scoring drift, and nurture leaks.</div></div>
+      <div class="saved-view-btn"><div class="sv-name">Abandoned Inquiry Recovery</div><div class="sv-desc">Form-start recovery and trust reinforcement flows.</div></div>
+      <div class="saved-view-btn"><div class="sv-name">Attribution Risk</div><div class="sv-desc">Identity capture, gclid pass-through, and offline tagging gaps.</div></div>
+    </div></div>
+  </div>
+</div>
+
+<div style="margin-top:24px;text-align:center;font-size:12px;color:var(--text-faint);">Mockup only. All figures use placeholder data for visual planning. Av/IntelOS · Email Lifecycle Command</div>
+</div>
+<script>function switchTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}</script>
+</body>
+</html>

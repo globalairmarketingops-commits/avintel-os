@@ -1,0 +1,25 @@
+node_modules/
+.env
+*.docx
+archived_pre_protocol_specs/
+.claude/
+.DS_Store
+Thumbs.db
+iisnode/
+
+# Build artifacts
+deploy.tar.gz
+deploy.zip
+deploy.sh
+backend/bin/
+backend/obj/
+backend/publish/
+backend/wwwroot/
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo

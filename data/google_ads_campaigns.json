@@ -1,0 +1,24 @@
+{
+  "fetched_at": "2026-03-27T12:00:00.000Z",
+  "source": "windsor_mcp",
+  "connector": "google_ads",
+  "account": "392-951-4382",
+  "date_range": "last_30d",
+  "confidence": "CONFIRMED",
+  "summary": {
+    "total_clicks": 13639,
+    "total_impressions": 110953,
+    "avg_ctr": 0.1229,
+    "total_conversions": 48.31,
+    "campaigns_active": 6
+  },
+  "data": [
+    {"campaign": "CESSNA | SINGLE | BUYER INTENT | US | SEARCH", "clicks": 5615, "impressions": 43018, "ctr": 0.1305, "conversions": 5, "cost_per_conversion": 445.48, "status": "active", "category": "piston"},
+    {"campaign": "CIRRUS | SINGLE | BUYER INTENT | US | SEARCH", "clicks": 4425, "impressions": 38512, "ctr": 0.1149, "conversions": 7, "cost_per_conversion": 314.79, "status": "active", "category": "piston"},
+    {"campaign": "BEECHCRAFT | SINGLE | BUYER INTENT | US | SEARCH", "clicks": 1790, "impressions": 12812, "ctr": 0.1397, "conversions": 0, "cost_per_conversion": null, "status": "active", "category": "piston"},
+    {"campaign": "**LP Search - Tier 1 - Jets {NEW}", "clicks": 1011, "impressions": 8260, "ctr": 0.1224, "conversions": 22.18, "cost_per_conversion": 13.01, "status": "active", "category": "jet"},
+    {"campaign": "**Aircraft Operating Cost Sales", "clicks": 667, "impressions": 6928, "ctr": 0.0963, "conversions": 13.13, "cost_per_conversion": 8.18, "status": "active", "category": "utility"},
+    {"campaign": "**LP Branded - Tier 1 {New}", "clicks": 131, "impressions": 423, "ctr": 0.3097, "conversions": 1, "cost_per_conversion": 160.24, "status": "active", "category": "branded"}
+  ],
+  "conversion_note": "Conversion tracking UNCONFIRMED — conversion counts may not reflect true QI. CPQI calculations should be treated as PROBABLE until tracking is validated."
+}

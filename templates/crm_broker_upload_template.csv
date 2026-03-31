@@ -1,0 +1,3 @@
+date,broker_name,category,tier,qualified_inquiries,total_inquiries,active_listings,avg_quality_score,health_score
+2026-03-30,Example Aviation Sales,piston,premium,45,120,28,78,85
+2026-03-30,Example Jet Brokers,jet,standard,12,35,8,82,72

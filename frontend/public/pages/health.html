@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Av/IntelOS — Data Health &amp; System Status</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* AvIntelOS Shared Design System — matches Av/SocialOS light theme */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#102297;--navy-deep:#0c1340;--navy-tint:#d6dcf7;--navy-tint-soft:#eef0fb;
+  --green:#97CB00;--green-dark:#5e8200;--green-text:#3a5c00;
+  --blue:#1877f2;--red:#d32f2f;--amber:#f59e0b;--violet:#7c3aed;--cyan:#0891b2;
+  --text-primary:#0c1340;--text-secondary:#374151;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:#d1d5db;--border-soft:#e5e7eb;--surface:#fff;--bg:#f4f6fb;--bg-soft:#eef0fb;
+  --radius:10px;--radius-lg:14px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(16,34,151,.08),0 4px 16px rgba(16,34,151,.06);
+  --shadow-md:0 2px 8px rgba(16,34,151,.10),0 8px 24px rgba(16,34,151,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(16,34,151,.18);border-radius:3px;}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,19,64,.3);}
+.logo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;display:flex;align-items:center;gap:2px;}
+.logo-prefix{color:var(--green);}
+.logo-sep{color:rgba(255,255,255,.18);margin:0 12px;font-weight:300;font-size:18px;}
+.logo-page{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.07em;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-role{display:flex;gap:4px;}
+.role-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.role-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);}
+.hdr-date{font-size:12px;color:rgba(255,255,255,.4);}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+
+/* PAGE HERO */
+.page-hero{padding:16px 32px 0;max-width:1560px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.02em;}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:3px;max-width:720px;}
+
+/* TAB BAR */
+.tab-bar{padding:12px 32px 0;max-width:1560px;margin:0 auto;}
+.tab-bar-inner{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-muted);background:var(--surface);box-shadow:var(--shadow);white-space:nowrap;}
+.tab-btn:hover{transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(16,34,151,.3);}
+
+/* BODY */
+.page-body{padding:16px 32px 56px;max-width:1560px;margin:0 auto;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* CONFIDENCE PILLS */
+.conf-confirmed{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-probable{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-possible{background:#fffbeb;color:#92400e;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* PRIORITY PILLS */
+.pri-now{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-next{background:#fef3c7;color:#78350f;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-later{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* STATUS PILLS */
+.status-good{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;}
+.status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.status-bad{background:#fff1f0;color:var(--red);border:1px solid #fecaca;}
+.status-pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* KPI METRIC CARDS */
+.metric-grid{display:grid;gap:12px;}
+.metric-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:all .2s;}
+.metric-card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;transform:translateY(-2px);}
+.metric-card:hover .m-label,.metric-card:hover .m-value,.metric-card:hover .m-sub{color:rgba(255,255,255,.9)!important;}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px;}
+.m-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;}
+.m-sub{font-size:11px;color:var(--text-muted);}
+.m-good{color:var(--green-text)!important;}.m-warn{color:#92400e!important;}.m-bad{color:var(--red)!important;}
+
+/* SECTION LABEL */
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(16,34,151,.2),transparent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-soft);border-left:4px solid var(--green);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card-plain{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;border-left-color:transparent;transform:translateY(-1px);box-shadow:0 8px 28px rgba(16,34,151,.22);}
+.card:hover .card-title,.card:hover .card-meta,.card:hover .row-label,.card:hover .row-value,.card:hover .row-note,.card:hover .note-text{color:rgba(255,255,255,.88)!important;}
+.card:hover .soft-row,.card:hover .mini-panel{border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;}
+.card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-meta{font-size:12px;color:var(--text-muted);margin-left:auto;font-weight:400;}
+.card-red{border-left-color:var(--red)!important;}
+.card-amber{border-left-color:var(--amber)!important;}
+
+/* SOFT ROWS */
+.soft-list{display:grid;gap:6px;}
+.soft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);font-size:12px;}
+.row-label{color:var(--text-muted);}
+.row-value{color:var(--text-primary);font-weight:700;}
+.row-note{color:var(--text-muted);font-size:11px;}
+.note-text{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+/* OPPORTUNITY CARDS */
+.opp-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.opp-card:last-child{margin-bottom:0;}
+.opp-card.pinned{border-left:3px solid var(--green-dark);}
+.opp-card.do-not-act{border-left:3px solid var(--amber);background:#fffbeb;}
+.opp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.opp-signal{font-size:13px;font-weight:700;color:var(--text-primary);flex:1;}
+.opp-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opp-gap{font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.opp-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opp-meta-item{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 10px;}
+.opp-meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:3px;}
+.opp-meta-value{font-size:12px;font-weight:600;color:var(--text-primary);}
+.lift-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lift-label{color:var(--text-muted);}
+.lift-value{font-weight:600;color:var(--text-primary);}
+.lift-value.expected{color:var(--green-dark);}
+
+/* TABLE */
+.table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border-soft);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 12px;text-align:left;background:var(--bg-soft);border-bottom:1px solid var(--border-soft);position:sticky;top:0;}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-secondary);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(16,34,151,.02);}
+.td-primary{font-weight:600;color:var(--text-primary);}
+.td-code{font-family:monospace;font-size:11px;}
+
+/* MINI PANEL */
+.mini-panel{padding:12px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);}
+.mini-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px;}
+.mini-value{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.mini-note{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+/* SPARKLINE */
+.spark-wrap{display:flex;align-items:flex-end;gap:2px;height:32px;}
+.spark-bar{background:var(--navy);border-radius:2px 2px 0 0;flex:1;min-width:4px;opacity:.7;}
+
+/* CHART SHELL */
+.chart-shell{height:180px;border-radius:var(--radius);background:linear-gradient(180deg,#fafbff,#fff);border:1px solid var(--border-soft);position:relative;overflow:hidden;padding:10px;}
+.gridlines{position:absolute;inset:0;background-image:linear-gradient(to top,rgba(209,213,219,.5) 1px,transparent 1px);background-size:100% 40px;pointer-events:none;}
+.line-wrap{position:absolute;left:10px;right:10px;top:12px;bottom:20px;}
+.line-wrap svg{width:100%;height:100%;}
+.legend-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px;}
+.legend-label{font-size:11px;color:var(--text-muted);}
+
+/* SAVED VIEWS */
+.saved-views-list{display:grid;gap:8px;}
+.saved-view-btn{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;text-align:left;cursor:pointer;transition:all .15s;width:100%;}
+.saved-view-btn:hover{border-color:var(--navy);background:var(--navy-tint-soft);}
+.sv-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+.sv-desc{font-size:11px;color:var(--text-muted);}
+
+/* TRUST MODULE */
+.trust-module{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;}
+.trust-module-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.trust-module li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0;}
+.trust-module li::before{content:'• ';color:var(--navy);}
+
+/* ACTION FRAMEWORK */
+.action-block{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;}
+.action-block-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.action-block li{font-size:12px;color:var(--text-muted);line-height:1.6;list-style:none;}
+.action-block li::before{content:'→ ';color:var(--navy);font-weight:600;}
+
+/* LEAKAGE TABLE BADGES */
+.badge-organic{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ppc{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-rev{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-inv{background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-data{background:#fff1f0;color:var(--red);border:1px solid #fecaca;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ga4{background:#f0f9ff;color:#075985;border:1px solid #bae6fd;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-content{background:#faf5ff;color:#6b21a8;border:1px solid #e9d5ff;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-gen{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+
+/* PROGRESS BAR */
+.prog-bar{height:8px;border-radius:20px;background:#e5e7eb;overflow:hidden;border:1px solid var(--border-soft);}
+.prog-fill{height:100%;border-radius:20px;}
+.prog-green{background:var(--green);}
+.prog-amber{background:var(--amber);}
+.prog-red{background:var(--red);}
+.prog-blue{background:var(--blue);}
+
+/* INCIDENT CARDS */
+.incident-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.incident-card.broken{border-left:4px solid var(--red);background:#fff5f5;}
+.incident-card.warning{border-left:4px solid var(--amber);background:#fffbeb;}
+.incident-card.healthy{border-left:4px solid var(--green-dark);}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.inc-title{font-size:13px;font-weight:700;color:var(--text-primary);}
+.inc-body{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;}
+.inc-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);}
+.inc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.grid-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;}
+.grid-main{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;}
+.grid-stack{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;}
+.mb-16{margin-bottom:16px;}.mb-20{margin-bottom:20px;}.mb-12{margin-bottom:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.flex-center{display:flex;align-items:center;gap:8px;}
+.space-y>*+*{margin-top:12px;}
+.up{color:var(--green-text);font-weight:600;}.down{color:var(--red);font-weight:600;}.flat{color:var(--text-muted);}
+
+@media(max-width:1200px){.grid-hero,.grid-main,.grid-stack,.grid-2{grid-template-columns:1fr;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.page-hero,.tab-bar,.page-body{padding-left:16px;padding-right:16px;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr;}}
+.metric-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="flex-center">
+    <div class="logo"><span class="logo-prefix">Av/</span>INTELOS</div>
+    <div class="logo-sep">|</div>
+    <div class="logo-page">Data Health &amp; System Status</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-role">
+      <button class="role-btn active" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Casey</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Clay</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Jeffrey</button>
+    </div>
+    <span class="hdr-date">Mar 30, 2026 · Sprint 6</span>
+    <button class="hdr-btn">↻ Refresh</button>
+  </div>
+</header>
+<div class="page-hero">
+  <div class="hero-eyebrow">GlobalAir.com / Av/IntelOS</div>
+  <h1 class="hero-title">Data Health &amp; System Status</h1>
+  <p class="hero-sub">Source trust registry, connector freshness SLA board, active incidents, AI crawler access status, email deliverability, and page-level decision safety mapping.</p>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner">
+  <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="switchTab('connectors',this)">Connectors</button>
+  <button class="tab-btn" onclick="switchTab('ga4',this)">GA4 &amp; Incidents</button>
+  <button class="tab-btn" onclick="switchTab('crawlers',this)">AI Crawlers</button>
+  <button class="tab-btn" onclick="switchTab('email',this)">Email Health</button>
+  <button class="tab-btn" onclick="switchTab('freshness',this)">Freshness SLA</button>
+  <button class="tab-btn" onclick="switchTab('ownership',this)">Page Impact Map</button>
+  <button class="tab-btn" onclick="switchTab('impact',this)">Trust</button>
+</div></div>
+<div class="page-body">
+
+<div id="tab-overview" class="tab-content active">
+  <div class="section-label mb-16">System Health KPIs</div>
+  <div class="metric-grid-6 mb-20">
+    <div class="metric-card"><div class="m-label">Decision-Safe Sources</div><div class="m-value m-warn">8 / 15</div><div class="m-sub">2 blocked</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Critical Incidents</div><div class="m-value m-bad">4</div><div class="m-sub">+1 vs last review</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Freshness SLA Compliance</div><div class="m-value m-warn">71%</div><div class="m-sub">-6 pts WoW</div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Pages Fully Safe</div><div class="m-value m-bad">3 / 7</div><div class="m-sub">2 degraded</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Remediation Ownership</div><div class="m-value m-good">92%</div><div class="m-sub">+9 pts MoM</div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Board-Safe Rendering</div><div class="m-value m-warn">Partial</div><div class="m-sub">Jeffrey-safe: confirmed only</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+  </div>
+  <div class="section-label mb-16">Active Critical Incidents</div>
+  <div class="incident-card broken">
+    <div class="inc-header"><div class="inc-title">🔴 [Score 98] GA4 engagement contamination remains unresolved</div><span class="conf-confirmed">CONFIRMED</span></div>
+    <div class="inc-body">Email_Open_ events continue inflating engagement-based reporting. Core measurement distortion still active. Multiple pages inherit degraded trust from this issue. Opened: June 14, 2023.</div>
+    <div class="inc-meta"><span>Owner: Analytics</span><span>Backup: DevOps</span><span>Blocker: Legacy reporting still references native engagement values</span><span>State: <strong style="color:var(--red);">Blocked</strong></span></div>
+  </div>
+  <div class="incident-card broken" style="margin-top:10px;">
+    <div class="inc-header"><div class="inc-title">🔴 [Score 95] All major AI crawlers currently blocked</div><span class="conf-confirmed">CONFIRMED</span></div>
+    <div class="inc-body">GlobalAir is losing discoverability and future authority capture in AI answer surfaces. Crawler access remains blocked pending robots/access ticket resolution. Opened: Mar 18, 2026.</div>
+    <div class="inc-meta"><span>Owner: SEO + DevOps</span><span>Ticket: CR-4471</span><span>Backup: Marketing Ops</span><span>State: <strong style="color:var(--red);">Blocked</strong></span></div>
+  </div>
+  <div class="incident-card warning" style="margin-top:10px;">
+    <div class="inc-header"><div class="inc-title">🟡 [Score 83] Google Ads freshness lag through Windsor</div><span class="conf-probable">PROBABLE</span></div>
+    <div class="inc-body">Connector lag exceeds operating SLA on the paid pipeline. Intraday budget shifts and spend-control decisions may be made on stale data. Opened: Mar 27, 2026.</div>
+    <div class="inc-meta"><span>Owner: Analytics + Paid</span><span>Backup: Windsor Admin</span><span>State: <strong style="color:var(--amber);">Diagnostic-only</strong></span></div>
+  </div>
+  <div class="incident-card warning" style="margin-top:10px;">
+    <div class="inc-header"><div class="inc-title">🟡 [Score 74] Identity stitching remains partial across return sessions</div><span class="conf-probable">PROBABLE</span></div>
+    <div class="inc-body">User ID persistence and CRM pass-through coverage remain incomplete. Some content, email, and retargeting assist paths are under-credited or blurred. Opened: Mar 12, 2026.</div>
+    <div class="inc-meta"><span>Owner: Analytics</span><span>Backup: Lifecycle Ops</span><span>State: <strong style="color:var(--amber);">Diagnostic-only</strong></span></div>
+  </div>
+</div>
+
+<div id="tab-connectors" class="tab-content">
+  <div class="section-label mb-16">Data Connector Status</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Connector</th><th>Category</th><th>Expected Cadence</th><th>Last Sync</th><th>Sync Age</th><th>SLA</th><th>Status</th><th>Decision State</th><th>Owner</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff5f5;"><td class="td-primary">GA4 Core Export</td><td>Measurement</td><td>6 hours</td><td>Today · 8:10 AM</td><td class="m-warn">7h 14m</td><td><span class="status-pill status-warn">Breached</span></td><td><span class="status-pill status-warn">Warning</span></td><td><span class="m-bad">Diagnostic-only</span></td><td>Analytics</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">Google Ads via Windsor</td><td>Paid Media</td><td>6 hours</td><td>Today · 4:25 AM</td><td class="m-bad">10h 59m</td><td><span class="status-pill status-bad">Breached</span></td><td><span class="status-pill status-warn">Warning</span></td><td><span class="m-bad">Diagnostic-only</span></td><td>Analytics + Paid</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">CRM Opportunity Feedback</td><td>Revenue</td><td>24 hours</td><td>Yesterday · 9:40 PM</td><td>17h 44m</td><td><span class="status-pill status-good">Within target</span></td><td><span class="status-pill status-good">Healthy</span></td><td class="m-good">Decision-safe</td><td>Revenue Ops</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Search Console</td><td>Organic</td><td>24 hours</td><td>Today · 2:10 AM</td><td>13h 29m</td><td><span class="status-pill status-good">Within target</span></td><td><span class="status-pill status-good">Healthy</span></td><td class="m-good">Decision-safe</td><td>SEO</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">SpyFu / Competitive Feed</td><td>Competitive</td><td>72 hours</td><td>4 days ago</td><td class="m-bad">98h</td><td><span class="status-pill status-bad">Breached</span></td><td><span class="status-pill status-warn">Warning</span></td><td><span class="m-bad">Diagnostic-only</span></td><td>Marketing Ops</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Email Platform Health Feed</td><td>Lifecycle</td><td>12 hours</td><td>Today · 11:20 AM</td><td class="m-good">4h 19m</td><td><span class="status-pill status-good">Within target</span></td><td><span class="status-pill status-good">Healthy</span></td><td class="m-good">Decision-safe</td><td>Lifecycle</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-ga4" class="tab-content">
+  <div class="section-label mb-16">GA4 Contamination — Active Since June 2023</div>
+  <div class="grid-2 mb-16">
+    <div class="card card-red"><div class="card-title">Contamination Status — Do Not Use for Decisioning</div>
+      <div class="soft-list">
+        <div class="soft-row"><span class="row-label">Reported engagement rate</span><span class="row-value m-bad">17.3% — unsafe</span></div>
+        <div class="soft-row"><span class="row-label">Real engagement estimate</span><span class="row-value m-good">68.9% — use this</span></div>
+        <div class="soft-row"><span class="row-label">Root cause</span><span class="row-value">Email_Open_ Measurement Protocol hits</span></div>
+        <div class="soft-row"><span class="row-label">Channels affected</span><span class="row-value m-bad">Direct, Email — unsafe. Others: directional</span></div>
+        <div class="soft-row"><span class="row-label">Jeffrey-safe</span><span class="row-value m-bad">No — suppress native engagement for ownership reporting</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Incident Trend (Open Count)</div>
+      <div class="chart-shell"><div class="gridlines"></div><div class="line-wrap"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="#d32f2f" stroke-width="3" points="0,30 17,30 33,25 50,25 67,25 83,25 100,25"/><polyline fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,2" points="0,50 17,50 33,50 50,50 67,50 83,50 100,50"/></svg></div></div>
+      <div class="legend-row"><span><span class="legend-dot" style="background:var(--red)"></span><span class="legend-label">Critical incidents</span></span><span><span class="legend-dot" style="background:var(--amber)"></span><span class="legend-label">Target = 2 max</span></span></div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-crawlers" class="tab-content">
+  <div class="section-label mb-16">AI Crawler Access — All Blocked (Ticket CR-4471)</div>
+  <div style="background:#fff5f5;border:1px solid rgba(211,47,47,.2);border-left:4px solid var(--red);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy);">🔴 All 6 tracked AI crawlers are currently blocked by robots.txt and/or WAF configuration. This is a strategic visibility problem — GlobalAir is losing discoverability in AI answer surfaces (ChatGPT, Perplexity, Claude, Google AI Overviews). Ticket CR-4471 is open. Validation required post-fix.</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Crawler</th><th>Status</th><th>Robots State</th><th>Ticket</th><th>Owner</th><th>Opened</th><th>Business Risk</th><th>Next Step</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff5f5;"><td class="td-primary">OpenAI GPTBot</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-bad">High</td><td>Validate robots update in production and confirm crawl access.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">PerplexityBot</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-bad">High</td><td>Resolve block and re-test live access.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">ClaudeBot</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-warn">Medium-High</td><td>Verify policy and robots allowlist after ticket close.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">Google-Extended</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-bad">High</td><td>Unblock and verify response headers and robots settings.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">CCBot</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-warn">Medium</td><td>Confirm crawl permissions after deployment.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">YouBot</td><td><span class="status-pill status-bad">Broken</span></td><td class="m-bad">Blocked</td><td>CR-4471</td><td>SEO + DevOps</td><td>Mar 18, 2026</td><td class="m-warn">Medium</td><td>Revalidate after production policy change.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-email" class="tab-content">
+  <div class="section-label mb-16">Email Deliverability &amp; Domain Health</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Domain</th><th>SPF</th><th>DKIM</th><th>DMARC</th><th>Deliverability</th><th>Inbox Risk</th><th>Sequences Affected</th><th>Revenue Risk</th><th>Status</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">mail.globalair.com</td><td class="m-good">Pass</td><td class="m-good">Pass</td><td class="m-warn">Quarantine</td><td>Good</td><td class="m-warn">Moderate</td><td>Lead nurture + broker reactivation</td><td class="m-warn">Medium</td><td><span class="status-pill status-warn">Warning</span></td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">news.globalair.com</td><td class="m-good">Pass</td><td class="m-good">Pass</td><td class="m-bad">None</td><td class="m-warn">Mixed</td><td class="m-bad">High</td><td>Newsletter and authority content distribution</td><td class="m-bad">Medium-High</td><td><span class="status-pill status-warn">Warning</span></td><td><span class="conf-probable">PROBABLE</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note-text" style="margin-top:12px;">⚠ news.globalair.com has no DMARC record. This increases inbox delivery risk for AvBlast newsletter distribution. Remediation required before any major list sends.</div>
+</div>
+
+<div id="tab-freshness" class="tab-content">
+  <div class="section-label mb-16">Freshness SLA Board</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Source</th><th>Expected Cadence</th><th>Actual Age</th><th>SLA Breach</th><th>Trend</th><th>Status</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff5f5;"><td class="td-primary">GA4</td><td>6h</td><td class="m-warn">7h 14m</td><td class="m-warn">Minor</td><td class="m-bad">Worsening</td><td><span class="status-pill status-warn">Warning</span></td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">Google Ads</td><td>6h</td><td class="m-bad">10h 59m</td><td class="m-bad">Major</td><td class="m-bad">Worsening</td><td><span class="status-pill status-bad">Warning</span></td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">CRM</td><td>24h</td><td>17h 44m</td><td class="m-good">None</td><td>Stable</td><td><span class="status-pill status-good">Healthy</span></td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Search Console</td><td>24h</td><td>13h 29m</td><td class="m-good">None</td><td>Stable</td><td><span class="status-pill status-good">Healthy</span></td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">SpyFu</td><td>72h</td><td class="m-bad">98h</td><td class="m-bad">Major</td><td class="m-bad">Worsening</td><td><span class="status-pill status-bad">Warning</span></td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Email Health</td><td>12h</td><td class="m-good">4h 19m</td><td class="m-good">None</td><td>Stable</td><td><span class="status-pill status-good">Healthy</span></td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-ownership" class="tab-content">
+  <div class="section-label mb-16">Page Impact Map — Decision Safety by Dashboard Page</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Page</th><th>Affected Widgets</th><th>Source Issue</th><th>Render State</th><th>Decision State</th><th>Next Move</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr style="background:#fff5f5;"><td class="td-primary">Page 02 — GA4 Analytics Hub</td><td>Engagement KPIs, channel comparisons, event confidence</td><td>GA4 contamination + validation gaps</td><td>Show clean-only logic and downgrade contaminated views</td><td><span class="m-bad">Diagnostic-only</span></td><td>Suppress native engagement for Jeffrey-safe rendering and keep contamination alert persistent.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">Page 05 — PPC Intelligence</td><td>Intraday paid shifts, conversion confidence, some geo surfaces</td><td>Google Ads freshness lag + incomplete call validation</td><td>Keep scale recommendations selective</td><td><span class="m-bad">Diagnostic-only</span></td><td>Do not broaden scale until freshness and call tracking are cleaner.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr style="background:#fff5f5;"><td class="td-primary">Page 06 — Content Performance</td><td>Content-to-QI attribution chain, assist rates, executive ROI framing</td><td>Identity stitching weakness + GA4 contamination inheritance</td><td>Allow directional assist insights but mark them confidence-aware</td><td><span class="m-warn">Diagnostic-only</span></td><td>Preserve role-aware confidence labels and avoid hard ROI claims.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Page 03 — Organic Intelligence</td><td>Competitive comparison surfaces only</td><td>SpyFu / competitive feed staleness</td><td>Organic opportunity logic remains safe; competitive data is downgraded</td><td class="m-good">Decision-safe</td><td>Use GSC and page-level organic signals as primary source until comp feed refreshes.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Page 07 — Data Health</td><td>Source trust registry, SLA board, issue map</td><td>Live by design</td><td>This page is the source-of-truth for trust labels</td><td class="m-good">Decision-safe</td><td>Keep issue ownership and page impact mapping current.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-impact" class="tab-content">
+  <div class="grid-2">
+    <div class="card"><div class="card-title">🔒 System Trust Registry</div>
+      <div class="trust-module"><div class="trust-module-title">Decision-safe sources (8/15)</div><ul><li>CRM Opportunity Feedback — CONFIRMED · Within SLA</li><li>Search Console — CONFIRMED · Within SLA</li><li>Email Platform Health — CONFIRMED · Within SLA</li><li>Call tracking (partial) — 74% coverage</li></ul></div>
+      <div class="trust-module"><div class="trust-module-title">Blocked / diagnostic-only sources</div><ul><li>GA4 engagement — contaminated since June 2023</li><li>Google Ads via Windsor — SLA breached 10h 59m</li><li>SpyFu competitive feed — 98h stale, major breach</li><li>Identity stitching — only 43% cross-session coverage</li></ul></div>
+    </div>
+    <div class="card"><div class="card-title">Saved Views</div><div class="saved-views-list">
+      <div class="saved-view-btn"><div class="sv-name">Weekly Integrity Control</div><div class="sv-desc">Top blockers, page impact, and what is unsafe to use.</div></div>
+      <div class="saved-view-btn"><div class="sv-name">Crawler War Room</div><div class="sv-desc">AI crawler blocks, tickets, and ownership status.</div></div>
+      <div class="saved-view-btn"><div class="sv-name">Board-Safe Systems View</div><div class="sv-desc">Confirmed-only system risk and page safety summary.</div></div>
+    </div></div>
+  </div>
+</div>
+
+<div style="margin-top:24px;text-align:center;font-size:12px;color:var(--text-faint);">Mockup only. All figures use placeholder data for visual planning. Av/IntelOS · Data Health &amp; System Status</div>
+</div>
+<script>function switchTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}</script>
+</body>
+</html>

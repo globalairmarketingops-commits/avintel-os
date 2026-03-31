@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Av/IntelOS — Social Authority Command</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* AvIntelOS Shared Design System — matches Av/SocialOS light theme */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#102297;--navy-deep:#0c1340;--navy-tint:#d6dcf7;--navy-tint-soft:#eef0fb;
+  --green:#97CB00;--green-dark:#5e8200;--green-text:#3a5c00;
+  --blue:#1877f2;--red:#d32f2f;--amber:#f59e0b;--violet:#7c3aed;--cyan:#0891b2;
+  --text-primary:#0c1340;--text-secondary:#374151;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:#d1d5db;--border-soft:#e5e7eb;--surface:#fff;--bg:#f4f6fb;--bg-soft:#eef0fb;
+  --radius:10px;--radius-lg:14px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(16,34,151,.08),0 4px 16px rgba(16,34,151,.06);
+  --shadow-md:0 2px 8px rgba(16,34,151,.10),0 8px 24px rgba(16,34,151,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.55;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(16,34,151,.18);border-radius:3px;}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,19,64,.3);}
+.logo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:#fff;display:flex;align-items:center;gap:2px;}
+.logo-prefix{color:var(--green);}
+.logo-sep{color:rgba(255,255,255,.18);margin:0 12px;font-weight:300;font-size:18px;}
+.logo-page{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.07em;text-transform:uppercase;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.hdr-role{display:flex;gap:4px;}
+.role-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.role-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);}
+.hdr-date{font-size:12px;color:rgba(255,255,255,.4);}
+.hdr-btn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+
+/* PAGE HERO */
+.page-hero{padding:16px 32px 0;max-width:1560px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.hero-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.02em;}
+.hero-sub{font-size:13px;color:var(--text-muted);margin-top:3px;max-width:720px;}
+
+/* TAB BAR */
+.tab-bar{padding:12px 32px 0;max-width:1560px;margin:0 auto;}
+.tab-bar-inner{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-muted);background:var(--surface);box-shadow:var(--shadow);white-space:nowrap;}
+.tab-btn:hover{transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(16,34,151,.3);}
+
+/* BODY */
+.page-body{padding:16px 32px 56px;max-width:1560px;margin:0 auto;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* CONFIDENCE PILLS */
+.conf-confirmed{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-probable{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.conf-possible{background:#fffbeb;color:#92400e;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* PRIORITY PILLS */
+.pri-now{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-next{background:#fef3c7;color:#78350f;border:1px solid #fde68a;display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.pri-later{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+
+/* STATUS PILLS */
+.status-good{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;}
+.status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.status-bad{background:#fff1f0;color:var(--red);border:1px solid #fecaca;}
+.status-pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+
+/* KPI METRIC CARDS */
+.metric-grid{display:grid;gap:12px;}
+.metric-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:all .2s;}
+.metric-card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;transform:translateY(-2px);}
+.metric-card:hover .m-label,.metric-card:hover .m-value,.metric-card:hover .m-sub{color:rgba(255,255,255,.9)!important;}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:6px;}
+.m-value{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;}
+.m-sub{font-size:11px;color:var(--text-muted);}
+.m-good{color:var(--green-text)!important;}.m-warn{color:#92400e!important;}.m-bad{color:var(--red)!important;}
+
+/* SECTION LABEL */
+.section-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(16,34,151,.2),transparent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-soft);border-left:4px solid var(--green);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card-plain{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
+.card:hover{background:linear-gradient(135deg,var(--navy),var(--blue));border-color:transparent;border-left-color:transparent;transform:translateY(-1px);box-shadow:0 8px 28px rgba(16,34,151,.22);}
+.card:hover .card-title,.card:hover .card-meta,.card:hover .row-label,.card:hover .row-value,.card:hover .row-note,.card:hover .note-text{color:rgba(255,255,255,.88)!important;}
+.card:hover .soft-row,.card:hover .mini-panel{border-color:rgba(255,255,255,.12)!important;background:rgba(255,255,255,.08)!important;}
+.card-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card-meta{font-size:12px;color:var(--text-muted);margin-left:auto;font-weight:400;}
+.card-red{border-left-color:var(--red)!important;}
+.card-amber{border-left-color:var(--amber)!important;}
+
+/* SOFT ROWS */
+.soft-list{display:grid;gap:6px;}
+.soft-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);font-size:12px;}
+.row-label{color:var(--text-muted);}
+.row-value{color:var(--text-primary);font-weight:700;}
+.row-note{color:var(--text-muted);font-size:11px;}
+.note-text{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+/* OPPORTUNITY CARDS */
+.opp-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.opp-card:last-child{margin-bottom:0;}
+.opp-card.pinned{border-left:3px solid var(--green-dark);}
+.opp-card.do-not-act{border-left:3px solid var(--amber);background:#fffbeb;}
+.opp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.opp-signal{font-size:13px;font-weight:700;color:var(--text-primary);flex:1;}
+.opp-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opp-gap{font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.opp-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opp-meta-item{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 10px;}
+.opp-meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);margin-bottom:3px;}
+.opp-meta-value{font-size:12px;font-weight:600;color:var(--text-primary);}
+.lift-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lift-label{color:var(--text-muted);}
+.lift-value{font-weight:600;color:var(--text-primary);}
+.lift-value.expected{color:var(--green-dark);}
+
+/* TABLE */
+.table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--border-soft);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 12px;text-align:left;background:var(--bg-soft);border-bottom:1px solid var(--border-soft);position:sticky;top:0;}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-secondary);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(16,34,151,.02);}
+.td-primary{font-weight:600;color:var(--text-primary);}
+.td-code{font-family:monospace;font-size:11px;}
+
+/* MINI PANEL */
+.mini-panel{padding:12px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border-soft);}
+.mini-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:4px;}
+.mini-value{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.mini-note{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+/* SPARKLINE */
+.spark-wrap{display:flex;align-items:flex-end;gap:2px;height:32px;}
+.spark-bar{background:var(--navy);border-radius:2px 2px 0 0;flex:1;min-width:4px;opacity:.7;}
+
+/* CHART SHELL */
+.chart-shell{height:180px;border-radius:var(--radius);background:linear-gradient(180deg,#fafbff,#fff);border:1px solid var(--border-soft);position:relative;overflow:hidden;padding:10px;}
+.gridlines{position:absolute;inset:0;background-image:linear-gradient(to top,rgba(209,213,219,.5) 1px,transparent 1px);background-size:100% 40px;pointer-events:none;}
+.line-wrap{position:absolute;left:10px;right:10px;top:12px;bottom:20px;}
+.line-wrap svg{width:100%;height:100%;}
+.legend-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px;}
+.legend-label{font-size:11px;color:var(--text-muted);}
+
+/* SAVED VIEWS */
+.saved-views-list{display:grid;gap:8px;}
+.saved-view-btn{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;text-align:left;cursor:pointer;transition:all .15s;width:100%;}
+.saved-view-btn:hover{border-color:var(--navy);background:var(--navy-tint-soft);}
+.sv-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+.sv-desc{font-size:11px;color:var(--text-muted);}
+
+/* TRUST MODULE */
+.trust-module{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;}
+.trust-module-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.trust-module li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0;}
+.trust-module li::before{content:'• ';color:var(--navy);}
+
+/* ACTION FRAMEWORK */
+.action-block{background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;}
+.action-block-title{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.action-block li{font-size:12px;color:var(--text-muted);line-height:1.6;list-style:none;}
+.action-block li::before{content:'→ ';color:var(--navy);font-weight:600;}
+
+/* LEAKAGE TABLE BADGES */
+.badge-organic{background:#f0fdf4;color:var(--green-text);border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ppc{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-rev{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-inv{background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-data{background:#fff1f0;color:var(--red);border:1px solid #fecaca;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-ga4{background:#f0f9ff;color:#075985;border:1px solid #bae6fd;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-content{background:#faf5ff;color:#6b21a8;border:1px solid #e9d5ff;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-gen{background:var(--bg-soft);color:var(--text-muted);border:1px solid var(--border-soft);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+
+/* PROGRESS BAR */
+.prog-bar{height:8px;border-radius:20px;background:#e5e7eb;overflow:hidden;border:1px solid var(--border-soft);}
+.prog-fill{height:100%;border-radius:20px;}
+.prog-green{background:var(--green);}
+.prog-amber{background:var(--amber);}
+.prog-red{background:var(--red);}
+.prog-blue{background:var(--blue);}
+
+/* INCIDENT CARDS */
+.incident-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.incident-card.broken{border-left:4px solid var(--red);background:#fff5f5;}
+.incident-card.warning{border-left:4px solid var(--amber);background:#fffbeb;}
+.incident-card.healthy{border-left:4px solid var(--green-dark);}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.inc-title{font-size:13px;font-weight:700;color:var(--text-primary);}
+.inc-body{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;}
+.inc-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);}
+.inc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.grid-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:14px;}
+.grid-main{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;}
+.grid-stack{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;}
+.mb-16{margin-bottom:16px;}.mb-20{margin-bottom:20px;}.mb-12{margin-bottom:12px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.flex-center{display:flex;align-items:center;gap:8px;}
+.space-y>*+*{margin-top:12px;}
+.up{color:var(--green-text);font-weight:600;}.down{color:var(--red);font-weight:600;}.flat{color:var(--text-muted);}
+
+@media(max-width:1200px){.grid-hero,.grid-main,.grid-stack,.grid-2{grid-template-columns:1fr;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.page-header,.page-hero,.tab-bar,.page-body{padding-left:16px;padding-right:16px;}.grid-3,.grid-4,.grid-5,.grid-6{grid-template-columns:1fr;}}
+.metric-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="flex-center">
+    <div class="logo"><span class="logo-prefix">Av/</span>INTELOS</div>
+    <div class="logo-sep">|</div>
+    <div class="logo-page">Social Authority Command</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-role">
+      <button class="role-btn active" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Casey</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Clay</button>
+      <button class="role-btn" onclick="document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Jeffrey</button>
+    </div>
+    <span class="hdr-date">Mar 30, 2026 · Sprint 6</span>
+    <button class="hdr-btn">↻ Refresh</button>
+  </div>
+</header>
+<div class="page-hero">
+  <div class="hero-eyebrow">GlobalAir.com / Av/IntelOS</div>
+  <h1 class="hero-title">Social Authority Command</h1>
+  <p class="hero-sub">70/20/10 content compliance, channel performance, content bucket balance, broker spotlight system, event amplification, and social-to-lifecycle loop integrity.</p>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner">
+  <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="switchTab('channels',this)">Channels</button>
+  <button class="tab-btn" onclick="switchTab('buckets',this)">Content Buckets</button>
+  <button class="tab-btn" onclick="switchTab('listing',this)">Opportunity Queue</button>
+  <button class="tab-btn" onclick="switchTab('broker',this)">Broker Spotlight</button>
+  <button class="tab-btn" onclick="switchTab('events',this)">Event Amplification</button>
+  <button class="tab-btn" onclick="switchTab('loop',this)">Social Loop</button>
+  <button class="tab-btn" onclick="switchTab('measurement',this)">Measurement</button>
+</div></div>
+<div class="page-body">
+
+<div id="tab-overview" class="tab-content active">
+  <div class="section-label mb-16">Social Authority KPIs</div>
+  <div class="metric-grid-6 mb-20">
+    <div class="metric-card"><div class="m-label">Social-Assisted QI</div><div class="m-value">21</div><div class="m-sub"><span class="up">▲ +8.4% MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">70/20/10 Compliance</div><div class="m-value m-warn">68/22/10</div><div class="m-sub">Authority mix close</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">YouTube Long-Form Velocity</div><div class="m-value m-bad">1/mo</div><div class="m-sub">Target: 2+/mo</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+    <div class="metric-card"><div class="m-label">Broker Spotlight Coverage</div><div class="m-value m-warn">33%</div><div class="m-sub"><span class="up">▲ +1 broker MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Email Capture from Social</div><div class="m-value m-warn">4.2%</div><div class="m-sub"><span class="up">▲ +0.9 pts MoM</span></div><div style="margin-top:6px;"><span class="conf-probable">PROBABLE</span></div></div>
+    <div class="metric-card"><div class="m-label">Authority Positioning Integrity</div><div class="m-value m-bad">In progress</div><div class="m-sub">2 channel drifts active</div><div style="margin-top:6px;"><span class="conf-confirmed">CONFIRMED</span></div></div>
+  </div>
+  <div style="background:#fff5f5;border:1px solid rgba(211,47,47,.2);border-left:4px solid var(--red);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy);">⚠ Authority Drift: Some channels still behave too much like listing repost feeds instead of aviation media surfaces. Social is not a listing distribution channel — it is an aviation intelligence and authority platform.</div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Priority Opportunity Queue</div>
+      <div class="opp-card pinned" style="margin-bottom:8px;"><div class="opp-header"><div class="opp-signal">[Score 95] Social leans too close to listing repost behavior</div><div class="opp-badges"><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Re-anchor weekly planning around authority and education first. Listing content reframed through market, model, or ownership context.</div></div>
+      <div class="opp-card pinned" style="margin-bottom:8px;"><div class="opp-header"><div class="opp-signal">[Score 94] YouTube long-form below required cadence</div><div class="opp-badges"><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Target is 2 long-form authority videos per month. YouTube supports SEO, retargeting, email capture, and authority positioning simultaneously.</div></div>
+      <div class="opp-card pinned" style="margin-bottom:0;"><div class="opp-header"><div class="opp-signal">[Score 93] Broker spotlight underused relative to retention and differentiation value</div><div class="opp-badges"><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Operationalize a monthly broker spotlight series with LinkedIn distribution and email amplification.</div></div>
+    </div>
+    <div class="card"><div class="card-title">Content Bucket Balance — Current vs Target</div>
+      <div class="soft-list">
+        <div class="soft-row"><span class="row-label">Model Education</span><span class="row-value">21% · Target: dominant bucket</span></div>
+        <div class="soft-row"><span class="row-label">Market Trends</span><span class="row-value">17% · Needs stronger weekly rhythm</span></div>
+        <div class="soft-row"><span class="row-label">Inventory Highlights</span><span class="row-value m-warn">22% · Max — must stay framed in context</span></div>
+        <div class="soft-row"><span class="row-label">Ownership Insights</span><span class="row-value m-good">15% · Excellent strategic fit</span></div>
+        <div class="soft-row"><span class="row-label">Broker Features</span><span class="row-value m-bad">9% · Underweight vs strategic value</span></div>
+        <div class="soft-row"><span class="row-label">Event Coverage</span><span class="row-value">8% · Needs 3-phase template</span></div>
+        <div class="soft-row"><span class="row-label">Aviation Finance</span><span class="row-value m-bad">4% · Underrepresented</span></div>
+        <div class="soft-row"><span class="row-label">Aircraft Comparisons</span><span class="row-value m-bad">4% · Too light</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-channels" class="tab-content">
+  <div class="section-label mb-16">Channel Performance — Social Platforms</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Platform</th><th>Role</th><th>Content Rules</th><th>Current Status</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">LinkedIn</td><td>Jets / Authority</td><td>No hashtags, emojis, or exclamation marks. Institutional tone.</td><td class="m-good">Primary authority platform</td><td>Needs consistent thought leadership cadence alongside listings.</td><td>2+ market intelligence posts per week + 1 listing with institutional framing.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Facebook</td><td>Piston / Turboprop / Helicopter</td><td>No jets. Emojis OK. Tag broker page. 2 images.</td><td>Volume platform — stable</td><td>Listing-heavy. Needs occasional education/ownership framing.</td><td>Maintain listing cadence but add model education content weekly.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Instagram</td><td>Visual quality / Carousels</td><td>Carousel-only (3 slides). 2–3/week. 15–25 hashtags. No links in caption.</td><td class="m-warn">Under-cadence / 1/mo authority</td><td>Carousel quality is good but production throughput is the bottleneck.</td><td>Prioritize 3 carousels per week with mix of aircraft beauty and market education.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">YouTube</td><td>Long-form authority / SEO compound</td><td>Model breakdowns, ownership explainers, broker interviews, market updates.</td><td class="m-bad">1 video/mo — below target</td><td>Video production is treated as occasional output instead of planned authority lane.</td><td>Establish minimum 2-video monthly cadence. Book in production calendar.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">X / Twitter</td><td>News-wire / Market pulse</td><td>Under 280 chars. 1–3 hashtags. News-wire tone.</td><td>Stable utility</td><td>Do not over-invest. News-wire and event pulse only.</td><td>Maintain cadence, never scale spend here.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-buckets" class="tab-content">
+  <div class="section-label mb-16">Content Bucket Intelligence</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Bucket</th><th>Current Share</th><th>Target Role</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Model Education</td><td>21%</td><td>Authority + buyer progression</td><td>Healthy base, but should be one of the dominant buckets every week.</td><td>Expand comparison, model breakdown, and video support around top aircraft.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Market Trends</td><td>17%</td><td>Media positioning</td><td>Strong authority bucket but not yet consistent enough at weekly rhythm.</td><td>Use recurring market pulse posts and trend framing across LinkedIn and YouTube.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Ownership Insights</td><td>15%</td><td>Buyer education</td><td>Excellent strategic fit; should keep growing.</td><td>Pair with ownership explainer video and operating cost content.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary m-warn">Inventory Highlights</td><td class="m-warn">22%</td><td>Discovery support</td><td>Useful, but needs strict framing discipline so it does not dominate the feed.</td><td>Always wrap listings in demand, performance, or ownership context.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary m-bad">Broker Features</td><td class="m-bad">9%</td><td>Retention + differentiation</td><td>Underweight relative to its strategic value.</td><td>Increase monthly spotlight cadence and connect to email.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Event Coverage</td><td>8%</td><td>Authority + recency</td><td>Present, but too dependent on event timing instead of a reusable content system.</td><td>Template before/during/after structure for every event.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary m-bad">Aviation Finance</td><td class="m-bad">4%</td><td>Conversion support</td><td>Underrepresented compared with buyer need.</td><td>Add financing explainers, market affordability framing, and ownership economics.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary m-bad">Aircraft Comparisons</td><td class="m-bad">4%</td><td>Decision support</td><td>Too light given how valuable compare behavior is.</td><td>Build a standing comparison series around priority models.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-listing" class="tab-content">
+  <div class="section-label mb-16">Full Opportunity Queue</div>
+  <div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 95] Social still leans too close to listing repost behavior</div><div class="opp-badges"><span class="badge-gen">Authority Gap</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Channel discipline slips when inventory content is easier to publish quickly. Authority positioning depends on market intelligence framing. Listing-heavy behavior reduces perceived scale.</div><div class="opp-meta"><div class="opp-meta-item"><div class="opp-meta-label">Owner</div><div class="opp-meta-value">Social Lead</div></div><div class="opp-meta-item"><div class="opp-meta-label">Time to Impact</div><div class="opp-meta-value">Immediate</div></div><div class="opp-meta-item"><div class="opp-meta-label">Lift</div><div class="opp-meta-value">Compounding brand gravity</div></div></div></div>
+  <div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 94] YouTube long-form authority is below required cadence</div><div class="opp-badges"><span class="badge-gen">Channel Discipline</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Target is 2 long-form videos per month minimum. Video production treated as occasional output instead of a planned authority lane. YouTube supports SEO, retargeting, email capture, and authority positioning.</div></div>
+  <div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 93] Broker spotlight underused — major untapped retention layer</div><div class="opp-badges"><span class="badge-rev">Broker Visibility</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">No persistent monthly spotlight system with distribution discipline. Broker visibility strengthens loyalty and differentiates against Controller. LinkedIn + email amplification is underused.</div></div>
+  <div class="opp-card pinned"><div class="opp-header"><div class="opp-signal">[Score 92] Events attended but amplification structure inconsistent</div><div class="opp-badges"><span class="badge-gen">Event Amplification</span><span class="conf-confirmed">CONFIRMED</span><span class="pri-now">Now</span></div></div><div class="opp-gap">Events should produce authority content, broker visibility, and recap value across before/during/after phases. Unstructured event posting leaves ROI on the table.</div></div>
+  <div class="opp-card"><div class="opp-header"><div class="opp-signal">[Score 85] Not every major social piece feeds email capture and retargeting loop</div><div class="opp-badges"><span class="badge-gen">Social Loop</span><span class="conf-probable">PROBABLE</span><span class="pri-next">Next</span></div></div><div class="opp-gap">Social content creates attention, but downstream audience sync and capture logic are not universal across all content types.</div></div>
+</div>
+
+<div id="tab-broker" class="tab-content">
+  <div class="section-label mb-16">Broker Spotlight System</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Broker</th><th>Spotlight Status</th><th>Inventory Support</th><th>Promotion Stack</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Jet Access Group</td><td class="m-warn">One-off feature</td><td>Moderate</td><td>LinkedIn only</td><td>Good signal but not full spotlight stack yet.</td><td>Expand to email + site recap + inventory highlight package.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Piston Select Partners</td><td class="m-warn">Planned</td><td class="m-good">High</td><td>Not live</td><td>Strong category fit but not operationalized.</td><td>Launch as monthly piston broker spotlight pilot.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">Premium Jet Advisors</td><td class="m-bad">None</td><td>Medium</td><td>None</td><td>Missed visibility value for a high-trust broker profile.</td><td>Add to upcoming broker feature calendar.</td><td><span class="conf-possible">POSSIBLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-events" class="tab-content">
+  <div class="section-label mb-16">Event Amplification System — 3-Phase Model</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Event</th><th>Pre-Event</th><th>Live Event</th><th>Post-Event</th><th>Issue</th><th>Action</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">NBAA S&D</td><td>Expectation post + who to watch</td><td>Booth visits, short interviews, market notes</td><td>Recap + market implications + broker highlights</td><td>Good live presence, but post-event packaging can be stronger.</td><td>Standardize full three-phase event content stack.</td><td><span class="conf-confirmed">CONFIRMED</span></td></tr>
+      <tr><td class="td-primary">AERO Friedrichshafen</td><td>Market expectation + attendance angle</td><td>Photo coverage + short pulse updates</td><td>Video montage + implications summary</td><td>International events need a clearer why-it-matters angle for U.S. audiences.</td><td>Add demand and market framing for each event recap.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+      <tr><td class="td-primary">Regional broker events</td><td class="m-bad">Usually missing</td><td>Ad hoc</td><td>Rare</td><td>Smaller events not yet captured into repeatable authority content.</td><td>Create lightweight event templates for regional activity.</td><td><span class="conf-probable">PROBABLE</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div id="tab-loop" class="tab-content">
+  <div class="section-label mb-16">Social → Email → PPC Compounding Loop</div>
+  <div class="card" style="margin-bottom:14px;"><div class="card-title">Loop Doctrine — Required for every major authority asset</div>
+    <div class="soft-list">
+      <div class="soft-row"><span class="row-label">Step 1</span><span class="row-value">Publish authority content with deliberate email capture CTA</span></div>
+      <div class="soft-row"><span class="row-label">Step 2</span><span class="row-value">Captured contacts enter model-specific lifecycle sequence</span></div>
+      <div class="soft-row"><span class="row-label">Step 3</span><span class="row-value">Social audience syncs to Google Ads / Meta / YouTube retargeting</span></div>
+      <div class="soft-row"><span class="row-label">Step 4</span><span class="row-value">Retargeting mirrors email content themes for the same user</span></div>
+      <div class="soft-row"><span class="row-label">Step 5</span><span class="row-value">High-score users enter abandoned-inquiry or urgency sequences</span></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card-plain"><div class="card-title">Loop Gaps — Current State</div><div class="soft-list">
+      <div class="soft-row"><span class="row-label">Email capture architecture</span><span class="row-value m-warn">Not mandatory in all briefs yet</span></div>
+      <div class="soft-row"><span class="row-label">Retargeting audience from social</span><span class="row-value m-warn">86% synced — 14% gap</span></div>
+      <div class="soft-row"><span class="row-label">Creative mirroring between email and paid</span><span class="row-value m-warn">Partially implemented</span></div>
+      <div class="soft-row"><span class="row-label">Score-aware suppression after inquiry</span><span class="row-value m-bad">Not yet universal</span></div>
+    </div></div>
+    <div class="card-plain"><div class="card-title">First-Party Capture from Social</div>
+      <div class="chart-shell"><div class="gridlines"></div><div class="line-wrap"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="rgba(16,34,151,.1)" stroke="#102297" stroke-width="3" points="0,80 17,74 33,68 50,58 67,50 83,44 100,38"/></svg></div></div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Email capture rate: 4.2% current → target 6%+ with mandatory CTA architecture</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-measurement" class="tab-content">
+  <div class="section-label mb-16">Social Measurement Registry</div>
+  <div class="table-wrap mb-16"><table>
+    <thead><tr><th>Metric</th><th>Current</th><th>Confidence</th><th>Issue</th><th>Next Move</th></tr></thead>
+    <tbody>
+      <tr><td class="td-primary">Social-assisted inquiries</td><td>21</td><td><span class="conf-probable">PROBABLE</span></td><td>Primary KPI is directionally useful, but still not fully board-safe.</td><td>Separate confirmed influence from directional authority contribution.</td></tr>
+      <tr><td class="td-primary">Profile visit → site click rate</td><td>18%</td><td><span class="conf-confirmed">CONFIRMED</span></td><td>Healthy, but differs materially by content bucket.</td><td>Benchmark by content bucket and channel role.</td></tr>
+      <tr><td class="td-primary">Video completion rate</td><td>34%</td><td><span class="conf-probable">PROBABLE</span></td><td>Useful for long-form authority, but sample size still too thin.</td><td>Increase cadence before drawing hard channel conclusions.</td></tr>
+      <tr><td class="td-primary">Email capture from social</td><td>4.2%</td><td><span class="conf-probable">PROBABLE</span></td><td>Improving, but many assets still lack deliberate capture architecture.</td><td>Make email capture mandatory in all major content briefs.</td></tr>
+      <tr><td class="td-primary">Follower growth</td><td>+6.8%</td><td><span class="conf-confirmed">CONFIRMED</span></td><td>Useful context, but not a primary success lens.</td><td>Keep tertiary only unless tied to business impact.</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div style="margin-top:24px;text-align:center;font-size:12px;color:var(--text-faint);">Mockup only. All figures use placeholder data for visual planning. Av/IntelOS · Social Authority Command</div>
+</div>
+<script>function switchTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}</script>
+</body>
+</html>

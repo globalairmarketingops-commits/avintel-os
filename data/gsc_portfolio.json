@@ -1,0 +1,14 @@
+{
+  "fetched_at": "2026-03-27T12:00:00.000Z",
+  "source": "windsor_mcp",
+  "connector": "searchconsole",
+  "account": "sc-domain:globalair.com",
+  "date_range": "last_30d",
+  "confidence": "CONFIRMED",
+  "summary": {
+    "total_clicks": 186932,
+    "total_impressions": 15459602,
+    "avg_ctr": 0.0121,
+    "avg_position": 7.66
+  }
+}
