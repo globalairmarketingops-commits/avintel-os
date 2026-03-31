@@ -5,17 +5,21 @@ using AvIntelOS.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database — Azure SQL with Managed Identity in production, InMemory for dev
+// Database — InMemory for now (Azure SQL available but deferred until schema validated)
+// Set USE_SQL_SERVER=true in app settings to enable Azure SQL
 var connectionString = builder.Configuration.GetConnectionString("AvIntelOS");
-if (!string.IsNullOrEmpty(connectionString))
+var useSql = builder.Configuration.GetValue<bool>("USE_SQL_SERVER", false);
+if (useSql && !string.IsNullOrEmpty(connectionString))
 {
     builder.Services.AddDbContext<AvIntelDbContext>(options =>
         options.UseSqlServer(connectionString));
+    Console.WriteLine("[DB] Using Azure SQL Server.");
 }
 else
 {
     builder.Services.AddDbContext<AvIntelDbContext>(options =>
         options.UseInMemoryDatabase("AvIntelOS"));
+    Console.WriteLine("[DB] Using InMemory database with seed data.");
 }
 
 // Services
@@ -50,12 +54,29 @@ using (var scope = app.Services.CreateScope())
 
     if (!string.IsNullOrEmpty(connectionString))
     {
-        // Production: ensure schema exists
-        db.Database.EnsureCreated();
+        try
+        {
+            // Production: ensure schema exists
+            db.Database.EnsureCreated();
+            Console.WriteLine("[DB] Azure SQL connected and schema ensured.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DB] SQL connection failed: {ex.Message}");
+            Console.WriteLine("[DB] App will continue with empty SQL tables or retry on next request.");
+        }
     }
 
     // Seed data (idempotent — checks if data already exists)
-    SeedDataService.Seed(db);
+    try
+    {
+        SeedDataService.Seed(db);
+        Console.WriteLine("[DB] Seed data loaded.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DB] Seed failed (may need SQL): {ex.Message}");
+    }
 }
 
 // Swagger in dev
